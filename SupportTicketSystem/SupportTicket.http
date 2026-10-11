@@ -1,0 +1,80 @@
+@host = http://localhost:5237
+
+### Login (demo admin) - the response contains the token
+# @name login
+POST {{host}}/api/users/login
+Content-Type: application/json
+
+{ "username": "admin", "password": "admin123" }
+
+### Register (no token needed)
+POST {{host}}/api/users/register
+Content-Type: application/json
+
+{ "username": "sara", "password": "sara123" }
+
+### All users (admin only)
+GET {{host}}/api/users
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Update a user (admin only)
+PUT {{host}}/api/users/2
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "username": "john", "role": "User" }
+
+### All tickets
+GET {{host}}/api/tickets
+Authorization: Bearer {{login.response.body.$.token}}
+
+### My tickets
+GET {{host}}/api/tickets/mine
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Create ticket (author = the logged-in user)
+POST {{host}}/api/tickets
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "title": "Printer broken", "description": "Office printer shows error E32", "priority": "High" }
+
+### One ticket (change the id to one that exists)
+GET {{host}}/api/tickets/1
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Update ticket
+PUT {{host}}/api/tickets/1
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "title": "Printer broken", "description": "Technician is on the way", "status": "In Progress", "priority": "High" }
+
+### Comments of a ticket
+GET {{host}}/api/tickets/1/comments
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Add comment (author = the logged-in user)
+POST {{host}}/api/tickets/1/comments
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "title": "Working on it", "description": "I am checking the printer now." }
+
+### Edit comment
+PUT {{host}}/api/tickets/1/comments/1
+Authorization: Bearer {{login.response.body.$.token}}
+Content-Type: application/json
+
+{ "title": "Fixed", "description": "Replaced the toner." }
+
+### Delete comment
+DELETE {{host}}/api/tickets/1/comments/1
+Authorization: Bearer {{login.response.body.$.token}}
+
+### Delete ticket (admin only)
+DELETE {{host}}/api/tickets/1
+Authorization: Bearer {{login.response.body.$.token}}
+
+### No token -> 401 Unauthorized
+GET {{host}}/api/tickets
