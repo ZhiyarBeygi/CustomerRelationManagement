@@ -18,20 +18,24 @@ namespace SupportTicketSystem.Controllers
             _service = service;
         }
 
+        // The id of the logged-in user, read from the token
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
+        // GET api/tickets
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _service.GetAllAsync());
         }
 
-        [HttpGet("my-tickets")]
-        public async Task<IActionResult> GetMyTickets()
+        // GET api/tickets/mine   (tickets of the logged-in user)
+        [HttpGet("mine")]
+        public async Task<IActionResult> GetMine()
         {
             return Ok(await _service.GetByAuthorAsync(CurrentUserId));
         }
 
+        // GET api/tickets/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -42,6 +46,7 @@ namespace SupportTicketSystem.Controllers
             return Ok(ticket);
         }
 
+        // POST api/tickets
         [HttpPost]
         public async Task<IActionResult> Create(CreateTicketDto dto)
         {
@@ -52,6 +57,7 @@ namespace SupportTicketSystem.Controllers
             return CreatedAtAction(nameof(GetById), new { id = ticket.ticket_id }, ticket);
         }
 
+        // PUT api/tickets/5   (only admins: this is what keeps priority and status under admin control)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, UpdateTicketDto dto)
@@ -63,14 +69,19 @@ namespace SupportTicketSystem.Controllers
             return NoContent();
         }
 
+        // DELETE api/tickets/5   (only normal users, and only their own tickets)
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = "User")]
         public async Task<IActionResult> Delete(int id)
         {
-            var deleted = await _service.DeleteAsync(id);
-            if (!deleted)
+            var ticket = await _service.GetByIdAsync(id);
+            if (ticket == null)
                 return NotFound("Ticket not found");
 
+            if (ticket.author_id != CurrentUserId)
+                return Forbid();
+
+            await _service.DeleteAsync(id);
             return NoContent();
         }
     }

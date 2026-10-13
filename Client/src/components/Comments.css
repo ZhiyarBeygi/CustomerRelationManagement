@@ -11,3 +11,6 @@
 .comment-actions .danger { background: #b42318; }
 .comment-actions .danger:hover { background: #8f1d14; }
 form.comment input, form.comment textarea { margin-bottom: 8px; }
+.card-actions { display: flex; gap: 8px; }
+.card-actions .danger { background: #b42318; }
+.card-actions .danger:hover { background: #8f1d14; }

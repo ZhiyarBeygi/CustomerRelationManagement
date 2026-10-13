@@ -2,7 +2,8 @@ import { useState } from "react";
 import Comments from "./Comments";
 
 // Shows one ticket. If onChange is given (admin page), status and priority become dropdowns.
-export default function TicketCard({ ticket, onChange }) {
+// If onDelete is given (user page), a Delete button is shown.
+export default function TicketCard({ ticket, onChange, onDelete }) {
   const [showComments, setShowComments] = useState(false);
 
   return (
@@ -39,10 +40,13 @@ export default function TicketCard({ ticket, onChange }) {
         {onChange ? "" : `Priority: ${ticket.priority || "-"} | `}Opened {new Date(ticket.created_at).toLocaleString()}
       </small>
 
-      <div>
+      <div className="card-actions">
         <button className="secondary comments-toggle" onClick={() => setShowComments(!showComments)}>
           {showComments ? "Hide comments" : "Comments"}
         </button>
+        {onDelete && (
+          <button className="danger comments-toggle" onClick={() => onDelete(ticket)}>Delete ticket</button>
+        )}
       </div>
       {showComments && <Comments ticketId={ticket.ticket_id} />}
     </div>
