@@ -18,24 +18,20 @@ namespace SupportTicketSystem.Controllers
             _service = service;
         }
 
-        // The id of the logged-in user, read from the token
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // GET api/tickets
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             return Ok(await _service.GetAllAsync());
         }
 
-        // GET api/tickets/mine   (tickets of the logged-in user)
-        [HttpGet("mine")]
+        [HttpGet("my-tickets")]
         public async Task<IActionResult> GetMine()
         {
             return Ok(await _service.GetByAuthorAsync(CurrentUserId));
         }
 
-        // GET api/tickets/5
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -46,7 +42,6 @@ namespace SupportTicketSystem.Controllers
             return Ok(ticket);
         }
 
-        // POST api/tickets
         [HttpPost]
         public async Task<IActionResult> Create(CreateTicketDto dto)
         {
@@ -57,7 +52,6 @@ namespace SupportTicketSystem.Controllers
             return CreatedAtAction(nameof(GetById), new { id = ticket.ticket_id }, ticket);
         }
 
-        // PUT api/tickets/5   (only admins: this is what keeps priority and status under admin control)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, UpdateTicketDto dto)
@@ -69,7 +63,6 @@ namespace SupportTicketSystem.Controllers
             return NoContent();
         }
 
-        // DELETE api/tickets/5   (only admins)
         [HttpDelete("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int id)

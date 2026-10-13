@@ -1,6 +1,5 @@
 namespace SupportTicketSystem.DTOs
 {
-    // What the API sends back for a comment
     public class GetCommentDto
     {
         public int comment_id { get; set; }

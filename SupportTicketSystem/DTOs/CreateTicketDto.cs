@@ -2,8 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupportTicketSystem.DTOs
 {
-    // What the client sends to create a ticket.
-    // The author is NOT sent: it comes from the JWT token. Status starts as "Pending" in the database.
     public class CreateTicketDto
     {
         [Required, StringLength(100)]

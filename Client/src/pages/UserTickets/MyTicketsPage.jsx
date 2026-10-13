@@ -19,7 +19,7 @@ export default function MyTicketsPage() {
     <Layout>
       <div className="row">
         <h1>My tickets</h1>
-        <button onClick={() => navigate("/tickets/new")}>New ticket</button>
+        <button onClick={() => navigate("/createTicket")}>New ticket</button>
       </div>
       {error && <p className="error">{error}</p>}
 

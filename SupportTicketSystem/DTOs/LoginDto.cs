@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupportTicketSystem.DTOs
 {
-    // What the client sends to log in
     public class LoginDto
     {
         [Required]

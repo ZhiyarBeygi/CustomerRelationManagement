@@ -1,6 +1,5 @@
 namespace SupportTicketSystem.DTOs
 {
-    // What the API sends back for a ticket
     public class GetTicketDto
     {
         public int ticket_id { get; set; }

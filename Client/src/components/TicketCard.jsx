@@ -1,4 +1,3 @@
-// Shows one ticket. If onChange is given (admin page), status and priority become dropdowns.
 export default function TicketCard({ ticket, onChange }) {
   return (
     <div className={"card ticket " + ticket.status.replace(" ", "-")}>

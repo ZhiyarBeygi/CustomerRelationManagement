@@ -23,7 +23,6 @@ namespace SupportTicketSystem.Services
 
         public async Task<GetTicketDto?> CreateAsync(CreateTicketDto dto, int authorId)
         {
-            // Rule: the author must be a real user
             var author = await _users.GetByIdAsync(authorId);
             if (author == null)
                 return null;

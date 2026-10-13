@@ -19,17 +19,14 @@ namespace SupportTicketSystem.Controllers
             _service = service;
         }
 
-        // The id of the logged-in user, read from the token
         private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        // GET api/tickets/5/comments
         [HttpGet]
         public async Task<IActionResult> GetByTicket(int ticketId)
         {
             return Ok(await _service.GetByTicketAsync(ticketId));
         }
 
-        // GET api/tickets/5/comments/3
         [HttpGet("{commentId}")]
         public async Task<IActionResult> GetById(int ticketId, int commentId)
         {
@@ -40,7 +37,6 @@ namespace SupportTicketSystem.Controllers
             return Ok(comment);
         }
 
-        // POST api/tickets/5/comments
         [HttpPost]
         public async Task<IActionResult> Create(int ticketId, CreateCommentDto dto)
         {
@@ -51,7 +47,6 @@ namespace SupportTicketSystem.Controllers
             return CreatedAtAction(nameof(GetById), new { ticketId, commentId = comment.comment_id }, comment);
         }
 
-        // PUT api/tickets/5/comments/3
         [HttpPut("{commentId}")]
         public async Task<IActionResult> Update(int ticketId, int commentId, UpdateCommentDto dto)
         {
@@ -62,7 +57,6 @@ namespace SupportTicketSystem.Controllers
             return NoContent();
         }
 
-        // DELETE api/tickets/5/comments/3
         [HttpDelete("{commentId}")]
         public async Task<IActionResult> Delete(int ticketId, int commentId)
         {

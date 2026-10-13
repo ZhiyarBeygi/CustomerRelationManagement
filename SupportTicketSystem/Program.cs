@@ -11,7 +11,6 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
-// Dependency injection: "when someone asks for the interface, give them this class"
 builder.Services.AddScoped<IUsersRepository, UsersRepository>();
 builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
@@ -54,8 +53,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseCors("Client");
-app.UseAuthentication();   // 1) who are you? (reads the token)
-app.UseAuthorization();    // 2) are you allowed? ([Authorize])
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();

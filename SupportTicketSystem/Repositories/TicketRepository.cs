@@ -44,7 +44,6 @@ namespace SupportTicketSystem.Repositories
         public async Task<int> CreateAsync(CreateTicketDto dto, int authorId)
         {
             using var connection = new SqlConnection(_connectionString);
-            // every new ticket starts as "Pending"
             return await connection.ExecuteScalarAsync<int>(
                 "usp_Ticket_Create",
                 new { dto.title, dto.description, status = "Pending", dto.priority, author_id = authorId },

@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupportTicketSystem.DTOs
 {
-    // What the client sends to register. Everyone who registers gets the role "User".
     public class CreateUserDto
     {
         [Required, StringLength(100)]

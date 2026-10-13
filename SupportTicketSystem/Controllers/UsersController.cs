@@ -5,10 +5,9 @@ using SupportTicketSystem.Services.Interfaces;
 
 namespace SupportTicketSystem.Controllers
 {
-    // The controller only receives the request, calls the service, and returns an HTTP answer
     [ApiController]
     [Route("api/[controller]")]
-    [Authorize]   // every endpoint needs a valid token, unless marked [AllowAnonymous]
+    [Authorize]
     public class UsersController : ControllerBase
     {
         private readonly IUserService _service;
@@ -18,7 +17,6 @@ namespace SupportTicketSystem.Controllers
             _service = service;
         }
 
-        // GET api/users   (only admins)
         [HttpGet]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> GetAll()
@@ -26,7 +24,6 @@ namespace SupportTicketSystem.Controllers
             return Ok(await _service.GetAllAsync());
         }
 
-        // GET api/users/1
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -37,7 +34,6 @@ namespace SupportTicketSystem.Controllers
             return Ok(user);
         }
 
-        // PUT api/users/1   (only admins)
         [HttpPut("{id}")]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Update(int id, UpdateUserDto dto)
@@ -49,7 +45,6 @@ namespace SupportTicketSystem.Controllers
             return NoContent();
         }
 
-        // POST api/users/register
         [HttpPost("register")]
         [AllowAnonymous]
         public async Task<IActionResult> Register(CreateUserDto dto)
@@ -61,7 +56,6 @@ namespace SupportTicketSystem.Controllers
             return CreatedAtAction(nameof(GetById), new { id = user.user_id }, user);
         }
 
-        // POST api/users/login   -> returns { token, user }
         [HttpPost("login")]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginDto dto)

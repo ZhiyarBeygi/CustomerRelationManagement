@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { api } from "../api";
-import Layout from "../components/Layout";
+import { api } from "../../api";
+import Layout from "../../components/Layout";
 
 export default function NewTicketPage() {
   const navigate = useNavigate();

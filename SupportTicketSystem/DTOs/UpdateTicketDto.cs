@@ -2,7 +2,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SupportTicketSystem.DTOs
 {
-    // What the client sends to edit a ticket
     public class UpdateTicketDto
     {
         [Required, StringLength(100)]

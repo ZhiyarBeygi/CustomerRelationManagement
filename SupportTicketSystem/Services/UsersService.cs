@@ -4,7 +4,6 @@ using SupportTicketSystem.Services.Interfaces;
 
 namespace SupportTicketSystem.Services
 {
-    // The service holds the rules ("is the username free?", "create a token after login")
     public class UsersService : IUserService
     {
         private readonly IUsersRepository _repo;

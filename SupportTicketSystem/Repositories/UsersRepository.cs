@@ -6,7 +6,6 @@ using SupportTicketSystem.Repositories.Interfaces;
 
 namespace SupportTicketSystem.Repositories
 {
-    // The repository's only job: call the stored procedures in the database
     public class UsersRepository : IUsersRepository
     {
         private readonly string _connectionString;
@@ -64,11 +63,10 @@ namespace SupportTicketSystem.Repositories
         public async Task<bool> UpdateAsync(int id, UpdateUserDto dto)
         {
             using var connection = new SqlConnection(_connectionString);
-            // the procedure returns "rows_affected" (0 = user not found)
             var rowsChanged = await connection.ExecuteScalarAsync<int>(
-                "usp_User_Update",
-                new { user_id = id, dto.username, dto.role },
-                commandType: CommandType.StoredProcedure);
+               "usp_User_Update",
+               new { user_id = id, dto.username, dto.role },
+               commandType: CommandType.StoredProcedure);
             return rowsChanged > 0;
         }
     }

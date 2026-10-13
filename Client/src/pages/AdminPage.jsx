@@ -6,7 +6,7 @@ import TicketCard from "../components/TicketCard";
 export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [tickets, setTickets] = useState([]);
-  const [selected, setSelected] = useState(null); // the user the admin clicked
+  const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -18,10 +18,8 @@ export default function AdminPage() {
       .catch((err) => setError(err.message));
   }, []);
 
-  // The API gives us all tickets, so we pick the ones that belong to the clicked user
   const userTickets = selected ? tickets.filter((t) => t.author_id === selected.user_id) : [];
 
-  // "changes" is either { status } or { priority }
   async function updateTicket(ticket, changes) {
     setError("");
     const updated = { ...ticket, ...changes };
