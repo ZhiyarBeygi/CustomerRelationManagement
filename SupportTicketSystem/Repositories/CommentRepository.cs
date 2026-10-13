@@ -27,7 +27,6 @@ namespace SupportTicketSystem.Repositories
         public async Task<GetCommentDto?> GetByIdAsync(int commentId, int ticketId)
         {
             using var connection = new SqlConnection(_connectionString);
-            // finds the comment only if it belongs to that ticket
             return await connection.QueryFirstOrDefaultAsync<GetCommentDto>(
                 "usp_Comment_GetById",
                 new { comment_id = commentId, ticket_id = ticketId },

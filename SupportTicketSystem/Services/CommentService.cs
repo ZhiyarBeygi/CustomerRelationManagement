@@ -35,7 +35,6 @@ namespace SupportTicketSystem.Services
 
         public async Task<bool> UpdateAsync(int ticketId, int commentId, UpdateCommentDto dto)
         {
-            // Rule: the comment must belong to that ticket
             var comment = await _comments.GetByIdAsync(commentId, ticketId);
             if (comment == null)
                 return false;

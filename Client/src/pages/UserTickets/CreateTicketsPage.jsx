@@ -18,7 +18,7 @@ export default function NewTicketPage() {
         method: "POST",
         body: JSON.stringify({ title, description, priority }),
       });
-      navigate("/tickets"); // back to the list, where the new ticket now appears
+      navigate("/tickets");
     } catch (err) {
       setError(err.message);
     }

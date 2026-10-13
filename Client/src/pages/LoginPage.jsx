@@ -24,7 +24,6 @@ export default function LoginPage() {
         body: JSON.stringify({ username, password }),
       });
       saveAuth(data);
-      // The role decides where you land
       navigate(data.user.role === "Admin" ? "/admin" : "/tickets");
     } catch (err) {
       setError(err.message);
