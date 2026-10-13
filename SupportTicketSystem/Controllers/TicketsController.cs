@@ -27,7 +27,7 @@ namespace SupportTicketSystem.Controllers
         }
 
         [HttpGet("my-tickets")]
-        public async Task<IActionResult> GetMine()
+        public async Task<IActionResult> GetMyTickets()
         {
             return Ok(await _service.GetByAuthorAsync(CurrentUserId));
         }

@@ -10,7 +10,7 @@ export default function MyTicketsPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    api("/api/tickets/mine")
+    api("/api/tickets/my-tickets")
       .then(setTickets)
       .catch((err) => setError(err.message));
   }, []);

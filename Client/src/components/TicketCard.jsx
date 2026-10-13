@@ -1,4 +1,10 @@
+import { useState } from "react";
+import Comments from "./Comments";
+
+// Shows one ticket. If onChange is given (admin page), status and priority become dropdowns.
 export default function TicketCard({ ticket, onChange }) {
+  const [showComments, setShowComments] = useState(false);
+
   return (
     <div className={"card ticket " + ticket.status.replace(" ", "-")}>
       <div className="row">
@@ -32,6 +38,13 @@ export default function TicketCard({ ticket, onChange }) {
       <small>
         {onChange ? "" : `Priority: ${ticket.priority || "-"} | `}Opened {new Date(ticket.created_at).toLocaleString()}
       </small>
+
+      <div>
+        <button className="secondary comments-toggle" onClick={() => setShowComments(!showComments)}>
+          {showComments ? "Hide comments" : "Comments"}
+        </button>
+      </div>
+      {showComments && <Comments ticketId={ticket.ticket_id} />}
     </div>
   );
 }

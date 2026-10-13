@@ -4,6 +4,7 @@ import LoginPage from "./pages/LoginPage";
 import MyTicketsPage from "./pages/UserTickets/MyTicketsPage";
 import CreateTicketPage from "./pages/UserTickets/CreateTicketsPage"
 import AdminPage from "./pages/AdminPage";
+import RegisterPage from "./pages/RegisterPage";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
       <Route path="/createTicket" element={<ProtectedRoute><CreateTicketPage /></ProtectedRoute>} /> 
       <Route path="/admin" element={<ProtectedRoute adminOnly><AdminPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
+      <Route path="/register" element={<RegisterPage />} />
     </Routes>
   );
 }

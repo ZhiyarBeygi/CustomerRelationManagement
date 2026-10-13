@@ -29,7 +29,7 @@ GET {{host}}/api/tickets
 Authorization: Bearer {{login.response.body.$.token}}
 
 ### My tickets
-GET {{host}}/api/tickets/mine
+GET {{host}}/api/tickets/my-tickets
 Authorization: Bearer {{login.response.body.$.token}}
 
 ### Create ticket (author = the logged-in user)

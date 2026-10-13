@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { saveAuth } from "../auth";
 
@@ -41,6 +41,7 @@ export default function LoginPage() {
       </label>
       {error && <p className="error">{error}</p>}
       <button type="submit">Log in</button>
+      <p>No account? <Link to="/register">Create one</Link></p>
     </form>
   );
 }

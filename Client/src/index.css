@@ -1,31 +1,51 @@
 :root {
-  --ink: #1d2733;
-  --muted: #5f6b7a;
-  --bg: #eceff4;
-  --line: #d3d9e2;
+  --ink: #18222e;
+  --muted: #5d6a79;
+  --bg: #eef1f6;
+  --line: #d5dbe5;
   --accent: #0f6f78;
-  font-family: "Segoe UI", system-ui, sans-serif;
+  --accent-dark: #0b575f;
+  --shadow: 0 1px 2px rgba(24, 34, 46, 0.06), 0 12px 26px -16px rgba(24, 34, 46, 0.3);
+  font-family: "Segoe UI Variable", "Segoe UI", system-ui, -apple-system, sans-serif;
   color: var(--ink);
 }
 * { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); }
-main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
-h1 { margin: 0 0 16px; font-size: 1.6rem; }
-h2 { margin: 0 0 14px; font-size: 1.15rem; }
-h3 { margin: 0; font-size: 1rem; }
-p { margin: 8px 0; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 420px at 6% -10%, #d6edf0 0%, transparent 60%),
+    radial-gradient(800px 400px at 100% 0%, #e5dff7 0%, transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+}
+main { max-width: 960px; margin: 0 auto; padding: 28px 16px 72px; }
+h1 { margin: 0 0 18px; font-size: 1.8rem; letter-spacing: -0.02em; }
+h2 { margin: 0 0 14px; font-size: 1.15rem; letter-spacing: -0.01em; }
+h3 { margin: 0; font-size: 1.02rem; }
+p { margin: 8px 0; line-height: 1.5; }
 small, .muted { color: var(--muted); }
 
-/* ---- top bar: dark teal ---- */
-.topbar { display: flex; align-items: center; gap: 20px; padding: 12px 24px; background: #0f4c5c; color: #fff; }
-.topbar nav { display: flex; gap: 8px; flex: 1; }
-.topbar a { color: #fff; text-decoration: none; font-weight: 600; padding: 6px 12px; border-radius: 6px; }
-.topbar a:hover { background: rgba(255, 255, 255, 0.16); }
-.who { color: #bfe3ea; }
-.topbar button.secondary { color: #fff; border-color: rgba(255, 255, 255, 0.45); }
+/* ---- top bar ---- */
+.topbar {
+  display: flex; align-items: center; gap: 20px; padding: 14px 28px; color: #fff;
+  background: linear-gradient(100deg, #0d3f4d, #146b78);
+  box-shadow: 0 6px 20px -10px rgba(13, 63, 77, 0.7);
+}
+.topbar strong { font-size: 1.1rem; }
+.topbar strong::before {
+  content: ""; display: inline-block; width: 10px; height: 10px; margin-right: 10px;
+  border-radius: 50%; background: #7ce0d0;
+}
+.topbar nav { display: flex; gap: 6px; flex: 1; }
+.topbar a { color: #fff; text-decoration: none; font-weight: 600; padding: 7px 14px; border-radius: 999px; transition: background 0.15s; }
+.topbar a:hover { background: rgba(255, 255, 255, 0.18); }
+.who { color: #bfe8ee; font-size: 0.95rem; }
+.topbar button.secondary { color: #fff; border-color: rgba(255, 255, 255, 0.5); }
+.topbar button.secondary:hover { background: rgba(255, 255, 255, 0.14); }
 
 /* ---- colored sections ---- */
-.panel { border: 1px solid; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.panel { border: 1px solid; border-radius: 16px; padding: 22px; margin-bottom: 22px; box-shadow: var(--shadow); }
 .panel-create { background: #e1f4f0; border-color: #86cdc1; }   /* forms: teal */
 .panel-create h1, .panel-create h2 { color: #0b5c52; }
 .panel-list { background: #e4ecfb; border-color: #a5bdee; }     /* ticket lists: blue */
@@ -33,33 +53,69 @@ small, .muted { color: var(--muted); }
 .panel-users { background: #ece6fa; border-color: #bfaeec; }    /* users: violet */
 .panel-users h2 { color: #55349b; }
 
-/* ---- ticket cards: white, with a stripe in the status color ---- */
-.card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+/* ---- ticket cards: white, stripe in the status color ---- */
+.card {
+  background: #fff; border: 1px solid var(--line); border-radius: 12px;
+  padding: 14px 18px; margin-bottom: 12px; box-shadow: 0 1px 2px rgba(24, 34, 46, 0.05);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.card p { color: #38465a; }
 .ticket { border-left: 6px solid; }
 .ticket.Pending { border-left-color: #e0a100; }
 .ticket.In-Progress { border-left-color: #2f6fdb; }
 .ticket.Done { border-left-color: #2e9a55; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
-label { display: block; margin-bottom: 12px; font-weight: 600; }
-input, textarea, select { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; }
-.row select { width: auto; margin: 0; }
-textarea { min-height: 80px; resize: vertical; }
-input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* ---- forms ---- */
+label { display: block; margin-bottom: 14px; font-weight: 600; font-size: 0.95rem; }
+input, textarea, select {
+  display: block; width: 100%; margin-top: 5px; padding: 10px 12px; font: inherit;
+  background: #fff; border: 1px solid var(--line); border-radius: 10px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(15, 111, 120, 0.2); }
+.row select { width: auto; margin: 0; padding: 7px 10px; }
+textarea { min-height: 90px; resize: vertical; }
 
-button { padding: 9px 16px; border: 0; border-radius: 6px; background: var(--accent); color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+button {
+  padding: 10px 18px; border: 0; border-radius: 10px; background: var(--accent); color: #fff;
+  font: inherit; font-weight: 600; cursor: pointer; transition: background 0.15s, transform 0.1s;
+}
+button:hover { background: var(--accent-dark); }
+button:active { transform: translateY(1px); }
+button:focus-visible { outline: 3px solid rgba(15, 111, 120, 0.35); outline-offset: 2px; }
 button.secondary { background: transparent; color: var(--ink); border: 1px solid var(--line); }
-.error { color: #b42318; font-weight: 600; }
+button.secondary:hover { background: rgba(24, 34, 46, 0.06); }
+.error { color: #b42318; font-weight: 600; background: #fdecea; border-radius: 8px; padding: 8px 12px; }
 
-.badge { padding: 3px 10px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; }
+/* ---- status badges ---- */
+.badge { padding: 4px 12px; border-radius: 999px; font-size: 0.85rem; font-weight: 600; }
+.badge::before { content: ""; display: inline-block; width: 7px; height: 7px; margin-right: 6px; border-radius: 50%; background: currentColor; }
 .badge.Pending { background: #fdf0c9; color: #7a5a00; }
 .badge.In-Progress { background: #d9e8ff; color: #1a4a99; }
 .badge.Done { background: #d6f0de; color: #1c6b36; }
 
-.login { max-width: 380px; margin: 12vh auto 0; }
-.split { display: grid; grid-template-columns: 250px 1fr; gap: 20px; align-items: start; }
-.user { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px; background: #fff; color: var(--ink); border: 1px solid #cdbff0; text-align: left; }
-.user:hover { background: #f6f2ff; }
+/* ---- login and register ---- */
+.login { max-width: 400px; margin: 10vh auto 0; padding: 30px; }
+.login::before { content: "Support Tickets"; display: block; margin-bottom: 8px; font-weight: 700; font-size: 0.9rem; color: #0b5c52; opacity: 0.8; }
+.login button { width: 100%; margin-top: 4px; }
+.login a { color: var(--accent-dark); font-weight: 600; }
+
+/* ---- admin page ---- */
+.split { display: grid; grid-template-columns: 260px 1fr; gap: 22px; align-items: start; }
+.user {
+  display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px;
+  background: #fff; color: var(--ink); border: 1px solid #cdbff0; text-align: left;
+}
+.user:hover { background: #f6f2ff; transform: translateX(3px); }
 .user.active { background: #55349b; border-color: #55349b; color: #fff; }
 .user.active small { color: #e3d9ff; }
 @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+
+/* ---- small entrance animation ---- */
+@keyframes rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+main > *, .login { animation: rise 0.35s ease both; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before { animation: none !important; transition: none !important; }
+}
