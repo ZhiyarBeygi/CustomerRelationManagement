@@ -7,7 +7,13 @@ export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+  if (sessionStorage.getItem("sessionExpired")) {
+    sessionStorage.removeItem("sessionExpired");
+    return "Your session has expired. Please log in again.";
+  }
+  return "";
+});
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,7 +32,7 @@ export default function LoginPage() {
   }
 
   return (
-    <form className="login card" onSubmit={handleSubmit}>
+    <form className="login panel panel-create" onSubmit={handleSubmit}>
       <h1>Log in</h1>
       <label>Username
         <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus required />

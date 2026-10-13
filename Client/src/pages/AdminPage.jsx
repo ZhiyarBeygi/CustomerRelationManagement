@@ -47,7 +47,7 @@ export default function AdminPage() {
       {error && <p className="error">{error}</p>}
 
       <div className="split">
-        <aside>
+        <aside className="panel panel-users">
           <h2>Users</h2>
           {users.map((u) => (
             <button
@@ -61,7 +61,7 @@ export default function AdminPage() {
           ))}
         </aside>
 
-        <section>
+        <section className="panel panel-list">
           {!selected && <p className="muted">Select a user to see their tickets.</p>}
           {selected && <h2>Tickets of {selected.username}</h2>}
           {selected && userTickets.length === 0 && <p className="muted">This user has no tickets.</p>}

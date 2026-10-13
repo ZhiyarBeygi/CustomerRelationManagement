@@ -1,32 +1,48 @@
 :root {
   --ink: #1d2733;
-  --muted: #6b7785;
-  --bg: #f4f6f8;
-  --card: #ffffff;
-  --line: #dde2e8;
+  --muted: #5f6b7a;
+  --bg: #eceff4;
+  --line: #d3d9e2;
   --accent: #0f6f78;
   font-family: "Segoe UI", system-ui, sans-serif;
   color: var(--ink);
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); }
-main { max-width: 920px; margin: 0 auto; padding: 24px 16px 64px; }
+main { max-width: 960px; margin: 0 auto; padding: 24px 16px 64px; }
 h1 { margin: 0 0 16px; font-size: 1.6rem; }
-h2 { margin: 0 0 12px; font-size: 1.15rem; }
+h2 { margin: 0 0 14px; font-size: 1.15rem; }
 h3 { margin: 0; font-size: 1rem; }
 p { margin: 8px 0; }
 small, .muted { color: var(--muted); }
 
-.topbar { display: flex; align-items: center; gap: 20px; padding: 12px 24px; background: var(--card); border-bottom: 1px solid var(--line); }
-.topbar nav { display: flex; gap: 16px; flex: 1; }
-.topbar a { color: var(--accent); text-decoration: none; font-weight: 600; }
-.who { color: var(--muted); }
+/* ---- top bar: dark teal ---- */
+.topbar { display: flex; align-items: center; gap: 20px; padding: 12px 24px; background: #0f4c5c; color: #fff; }
+.topbar nav { display: flex; gap: 8px; flex: 1; }
+.topbar a { color: #fff; text-decoration: none; font-weight: 600; padding: 6px 12px; border-radius: 6px; }
+.topbar a:hover { background: rgba(255, 255, 255, 0.16); }
+.who { color: #bfe3ea; }
+.topbar button.secondary { color: #fff; border-color: rgba(255, 255, 255, 0.45); }
 
-.card { background: var(--card); border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 14px; }
+/* ---- colored sections ---- */
+.panel { border: 1px solid; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+.panel-create { background: #e1f4f0; border-color: #86cdc1; }   /* forms: teal */
+.panel-create h1, .panel-create h2 { color: #0b5c52; }
+.panel-list { background: #e4ecfb; border-color: #a5bdee; }     /* ticket lists: blue */
+.panel-list h2 { color: #1d4a9c; }
+.panel-users { background: #ece6fa; border-color: #bfaeec; }    /* users: violet */
+.panel-users h2 { color: #55349b; }
+
+/* ---- ticket cards: white, with a stripe in the status color ---- */
+.card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px; }
+.ticket { border-left: 6px solid; }
+.ticket.Pending { border-left-color: #e0a100; }
+.ticket.In-Progress { border-left-color: #2f6fdb; }
+.ticket.Done { border-left-color: #2e9a55; }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
 label { display: block; margin-bottom: 12px; font-weight: 600; }
-input, textarea, select { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; font: inherit; }
+input, textarea, select { display: block; width: 100%; margin-top: 4px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 6px; background: #fff; font: inherit; }
 .row select { width: auto; margin: 0; }
 textarea { min-height: 80px; resize: vertical; }
 input:focus-visible, textarea:focus-visible, select:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
@@ -40,8 +56,10 @@ button.secondary { background: transparent; color: var(--ink); border: 1px solid
 .badge.In-Progress { background: #d9e8ff; color: #1a4a99; }
 .badge.Done { background: #d6f0de; color: #1c6b36; }
 
-.login { max-width: 360px; margin: 12vh auto 0; }
-.split { display: grid; grid-template-columns: 240px 1fr; gap: 24px; align-items: start; }
-.user { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 6px; background: var(--card); color: var(--ink); border: 1px solid var(--line); text-align: left; }
-.user.active { border-color: var(--accent); box-shadow: inset 3px 0 0 var(--accent); }
+.login { max-width: 380px; margin: 12vh auto 0; }
+.split { display: grid; grid-template-columns: 250px 1fr; gap: 20px; align-items: start; }
+.user { display: flex; justify-content: space-between; align-items: center; width: 100%; margin-bottom: 8px; background: #fff; color: var(--ink); border: 1px solid #cdbff0; text-align: left; }
+.user:hover { background: #f6f2ff; }
+.user.active { background: #55349b; border-color: #55349b; color: #fff; }
+.user.active small { color: #e3d9ff; }
 @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }

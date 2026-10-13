@@ -12,9 +12,9 @@ export async function api(path, options = {}) {
     },
   });
 
-  // Token missing or expired: go back to the login page
   if (res.status === 401 && path !== "/api/users/login") {
     clearAuth();
+    sessionStorage.setItem("sessionExpired", "1"); 
     window.location.href = "/login";
     return;
   }
@@ -23,7 +23,7 @@ export async function api(path, options = {}) {
   if (!res.ok) {
     let message = text || `Request failed (${res.status})`;
     try {
-      const body = JSON.parse(text); // validation errors come back as JSON
+      const body = JSON.parse(text); 
       message = body.errors ? Object.values(body.errors).flat()[0] : body.title || message;
     } catch {}
     throw new Error(message);

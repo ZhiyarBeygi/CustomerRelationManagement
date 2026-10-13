@@ -21,7 +21,6 @@ builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
-// JWT: tell ASP.NET how to check the token that comes with each request
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>
     {
@@ -38,7 +37,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-// Lets the Vite/React front end (port 5173) call this API
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("Client", policy =>

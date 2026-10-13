@@ -1,7 +1,8 @@
 import { Routes, Route, Navigate } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
-import MyTicketsPage from "./pages/MyTicketsPage";
+import MyTicketsPage from "./pages/UserTickets/MyTicketsPage";
+import CreateTicketPage from "./pages/UserTickets/CreateTicketsPage"
 import AdminPage from "./pages/AdminPage";
 
 export default function App() {
@@ -9,6 +10,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+      <Route path="/createTicket" element={<ProtectedRoute><CreateTicketPage /></ProtectedRoute>} /> 
       <Route path="/admin" element={<ProtectedRoute adminOnly><AdminPage /></ProtectedRoute>} />
       <Route path="*" element={<Navigate to="/login" />} />
     </Routes>

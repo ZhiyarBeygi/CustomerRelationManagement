@@ -1,22 +1,14 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import Layout from "../components/Layout";
-import TicketCard from "../components/TicketCard";
 
-export default function MyTicketsPage() {
-  const [tickets, setTickets] = useState([]);
+export default function NewTicketPage() {
+  const navigate = useNavigate();
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [error, setError] = useState("");
-
-  async function loadTickets() {
-    setTickets(await api("/api/tickets/mine"));
-  }
-
-  useEffect(() => {
-    loadTickets().catch((err) => setError(err.message));
-  }, []);
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -26,10 +18,7 @@ export default function MyTicketsPage() {
         method: "POST",
         body: JSON.stringify({ title, description, priority }),
       });
-      setTitle("");
-      setDescription("");
-      setPriority("Medium");
-      await loadTickets();
+      navigate("/tickets"); // back to the list, where the new ticket now appears
     } catch (err) {
       setError(err.message);
     }
@@ -37,9 +26,9 @@ export default function MyTicketsPage() {
 
   return (
     <Layout>
-      <h1>My tickets</h1>
+      <h1>New ticket</h1>
 
-      <form className="card" onSubmit={handleCreate}>
+      <form className="panel panel-create" onSubmit={handleCreate}>
         <h2>Open a new ticket</h2>
         <label>Title
           <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} required />
@@ -55,11 +44,11 @@ export default function MyTicketsPage() {
           </select>
         </label>
         {error && <p className="error">{error}</p>}
-        <button type="submit">Create ticket</button>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button type="submit">Create ticket</button>
+          <button type="button" className="secondary" onClick={() => navigate("/tickets")}>Cancel</button>
+        </div>
       </form>
-
-      {tickets.length === 0 && <p className="muted">You have no tickets yet. Open one above.</p>}
-      {tickets.map((t) => <TicketCard key={t.ticket_id} ticket={t} />)}
     </Layout>
   );
 }

@@ -27,7 +27,6 @@ namespace SupportTicketSystem.Repositories
         public async Task<UsersDto?> GetByIdAsync(int id)
         {
             using var connection = new SqlConnection(_connectionString);
-            // the procedure also returns the password column, but UsersDto has no password property, so it is ignored
             return await connection.QueryFirstOrDefaultAsync<UsersDto>(
                 "usp_User_GetById",
                 new { user_id = id },

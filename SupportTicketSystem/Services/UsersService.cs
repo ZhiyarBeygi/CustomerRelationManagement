@@ -25,10 +25,8 @@ namespace SupportTicketSystem.Services
             if (await _repo.UsernameExistsAsync(dto.username))
                 return null;
 
-            // Everyone who registers is a normal "User" (admins are created in the database)
             await _repo.CreateAsync(dto.username, dto.password, "User");
 
-            // usp_User_Create does not return the new id, so we read the new user back using the same lookup as login
             return await _repo.LoginAsync(dto.username, dto.password);
         }
 
