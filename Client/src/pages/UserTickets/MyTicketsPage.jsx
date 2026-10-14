@@ -4,15 +4,11 @@ import { api } from "../../api";
 import { getUser } from "../../auth";
 import Layout from "../../components/Layout";
 import TicketCard from "../../components/TicketCard";
-import { sortTickets } from "../../sortTickets";
 
 export default function MyTicketsPage() {
   const navigate = useNavigate();
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState("");
-
-  // Only normal users get the Delete button (the API enforces this too)
-  const canDelete = getUser().role === "User";
 
   useEffect(() => {
     api("/api/tickets/mine")
@@ -42,8 +38,8 @@ export default function MyTicketsPage() {
       <section className="panel panel-list">
         <h2>Your tickets</h2>
         {tickets.length === 0 && <p className="muted">You have no tickets yet.</p>}
-        {sortTickets(tickets).map((t) => (
-          <TicketCard key={t.ticket_id} ticket={t} onDelete={canDelete ? handleDelete : undefined} />
+        {tickets.map((t) => (
+          <TicketCard key={t.ticket_id} ticket={t} /*onDelete={canDelete ? handleDelete : undefined*/ />
         ))}
       </section>
     </Layout>
