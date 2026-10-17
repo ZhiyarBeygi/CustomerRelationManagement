@@ -7,7 +7,8 @@ namespace SupportTicketSystem.DTOs
         [Required, StringLength(100)]
         public string username { get; set; } = "";
 
-        [Required, AllowedValues("Admin", "User")]
-        public string role { get; set; } = "";
+        [Required, AllowedValues(1, 2, 3, 4, 5)]
+        public int role { get; set; }
+
     }
 }

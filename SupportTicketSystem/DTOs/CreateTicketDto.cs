@@ -10,7 +10,7 @@ namespace SupportTicketSystem.DTOs
         [Required, StringLength(500)]
         public string description { get; set; } = "";
 
-        [AllowedValues("Low", "Medium", "High")]
-        public string priority { get; set; } = "Medium";
+        [Required, AllowedValues(1, 2, 3)]
+        public int priority_id { get; set; }
     }
 }

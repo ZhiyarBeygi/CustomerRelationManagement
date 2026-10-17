@@ -39,7 +39,7 @@ export default function MyTicketsPage() {
         <h2>Your tickets</h2>
         {tickets.length === 0 && <p className="muted">You have no tickets yet.</p>}
         {tickets.map((t) => (
-          <TicketCard key={t.ticket_id} ticket={t} /*onDelete={canDelete ? handleDelete : undefined*/ />
+          <TicketCard key={t.ticket_id} ticket={t}/>
         ))}
       </section>
     </Layout>
