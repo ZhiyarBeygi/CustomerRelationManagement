@@ -16,13 +16,13 @@ namespace SupportTicketSystem.Services
             _config = config;
         }
 
-        public string CreateToken(UsersDto user)
+        public string CreateToken(GetUsersDto user)
         {
             var claims = new[]
             {
-                new Claim(ClaimTypes.NameIdentifier, user.user_id.ToString()),
-                new Claim(ClaimTypes.Name, user.username),
-                new Claim(ClaimTypes.Role, user.role)
+                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Role, user.Role ?? "")
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));

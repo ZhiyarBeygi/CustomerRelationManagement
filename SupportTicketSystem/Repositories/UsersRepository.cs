@@ -1,73 +1,65 @@
-using System.Data;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
+using System.Data;
+namespace SupportTicketSystem.Repositories;
 
-namespace SupportTicketSystem.Repositories
+public class UsersRepository : IUsersRepository
 {
-    public class UsersRepository : IUsersRepository
+    private readonly string _connectionString;
+    public UsersRepository(IConfiguration configuration) =>
+        _connectionString = configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' was not found.");
+
+    public async Task<IEnumerable<GetUsersDto>> GetAllAsync()
     {
-        private readonly string _connectionString;
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QueryAsync<GetUsersDto>("usp_User_GetAll", commandType: CommandType.StoredProcedure);
+    }
 
-        public UsersRepository(IConfiguration config)
-        {
-            _connectionString = config.GetConnectionString("DefaultConnection")!;
-        }
+    public async Task<GetUsersDto?> GetByIdAsync(int id)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<GetUsersDto>(
+            "usp_User_GetById", new { user_id = id }, commandType: CommandType.StoredProcedure);
+    }
 
-        public async Task<IEnumerable<UsersDto>> GetAllAsync()
-        {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryAsync<UsersDto>(
-                "usp_User_GetAll",
-                commandType: CommandType.StoredProcedure);
-        }
+    public async Task<GetUsersDto?> GetByUsernameAsync(string username)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<GetUsersDto>(
+            "usp_User_GetByUsername", new { username }, commandType: CommandType.StoredProcedure);
+    }
 
-        public async Task<UsersDto?> GetByIdAsync(int id)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryFirstOrDefaultAsync<UsersDto>(
-                "usp_User_GetById",
-                new { user_id = id },
-                commandType: CommandType.StoredProcedure);
-        }
+    public async Task<string?> GetPasswordHashByUsernameAsync(string username)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QuerySingleOrDefaultAsync<string>(
+            "usp_User_GetPasswordHashByUsername", new { username }, commandType: CommandType.StoredProcedure);
+    }
 
-        public async Task<bool> UsernameExistsAsync(string username)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            var count = await connection.ExecuteScalarAsync<int>(
-                "usp_User_UsernameExists",
-                new { username },
-                commandType: CommandType.StoredProcedure);
-            return count > 0;
-        }
+    public async Task<int> CreateAsync(CreateUserDto dto, string passwordHash)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.ExecuteScalarAsync<int>("usp_User_Create",
+            new { username = dto.Username, password_hash = passwordHash, role_id = dto.RoleId, department_id = dto.DepartmentId },
+            commandType: CommandType.StoredProcedure);
+    }
 
-        public async Task CreateAsync(string username, string password, string role)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            await connection.ExecuteAsync(
-                "usp_User_Create",
-                new { role, username, password },
-                commandType: CommandType.StoredProcedure);
-        }
+    public async Task<bool> UpdateAsync(int id, UpdateUserDto dto)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        var rows = await connection.ExecuteScalarAsync<int>("usp_User_Update",
+            new { user_id = id, username = dto.Username, role_id = dto.RoleId, department_id = dto.DepartmentId },
+            commandType: CommandType.StoredProcedure);
+        return rows > 0;
+    }
 
-        public async Task<UsersDto?> LoginAsync(string username, string password)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            return await connection.QueryFirstOrDefaultAsync<UsersDto>(
-                "usp_User_Login",
-                new { username, password },
-                commandType: CommandType.StoredProcedure);
-        }
-
-        public async Task<bool> UpdateAsync(int id, UpdateUserDto dto)
-        {
-            using var connection = new SqlConnection(_connectionString);
-            var rowsChanged = await connection.ExecuteScalarAsync<int>(
-               "usp_User_Update",
-               new { user_id = id, dto.username, dto.role },
-               commandType: CommandType.StoredProcedure);
-            return rowsChanged > 0;
-        }
+    public async Task<bool> UsernameExistsAsync(string username)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.ExecuteScalarAsync<int>("usp_User_UsernameExists",
+            new { username }, commandType: CommandType.StoredProcedure) > 0;
     }
 }

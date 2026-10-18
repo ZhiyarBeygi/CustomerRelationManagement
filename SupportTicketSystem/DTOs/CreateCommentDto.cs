@@ -1,13 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+namespace SupportTicketSystem.DTOs;
 
-namespace SupportTicketSystem.DTOs
+public class CreateCommentDto
 {
-    public class CreateCommentDto
-    {
-        [Required, StringLength(100)]
-        public string title { get; set; } = "";
-
-        [Required, StringLength(500)]
-        public string description { get; set; } = "";
-    }
+    [Required, StringLength(100)] public string Title { get; set; } = string.Empty;
+    [Required, StringLength(500)] public string Description { get; set; } = string.Empty;
+    [Required] public int AuthorId { get; set; }
+    [Required] public int TicketId { get; set; }
+    public bool IsInternal { get; set; }
 }

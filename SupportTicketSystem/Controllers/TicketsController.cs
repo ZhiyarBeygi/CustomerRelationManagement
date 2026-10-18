@@ -1,88 +1,41 @@
-using System.Security.Claims;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
+namespace SupportTicketSystem.Controllers;
 
-namespace SupportTicketSystem.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class TicketsController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    [Authorize]
-    public class TicketsController : ControllerBase
+    private readonly ITicketService _service;
+    public TicketsController(ITicketService service) => _service = service;
+
+    [HttpGet]
+    public async Task<ActionResult<IEnumerable<GetTicketDto>>> GetAll() => Ok(await _service.GetAllAsync());
+
+    [HttpGet("{id:int}")]
+    public async Task<ActionResult<GetTicketDto>> GetById(int id)
     {
-        private readonly ITicketService _service;
-
-        public TicketsController(ITicketService service)
-        {
-            _service = service;
-        }
-
-        // The id of the logged-in user, read from the token
-        private int CurrentUserId => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
-
-        // GET api/tickets
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
-        {
-            return Ok(await _service.GetAllAsync());
-        }
-
-        // GET api/tickets/mine   (tickets of the logged-in user)
-        [HttpGet("mine")]
-        public async Task<IActionResult> GetMine()
-        {
-            return Ok(await _service.GetByAuthorAsync(CurrentUserId));
-        }
-
-        // GET api/tickets/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var ticket = await _service.GetByIdAsync(id);
-            if (ticket == null)
-                return NotFound("Ticket not found");
-
-            return Ok(ticket);
-        }
-
-        // POST api/tickets
-        [HttpPost]
-        public async Task<IActionResult> Create(CreateTicketDto dto)
-        {
-            var ticket = await _service.CreateAsync(dto, CurrentUserId);
-            if (ticket == null)
-                return BadRequest("Author does not exist");
-
-            return CreatedAtAction(nameof(GetById), new { id = ticket.ticket_id }, ticket);
-        }
-
-        // PUT api/tickets/5   (only admins: this is what keeps priority and status under admin control)
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Update(int id, UpdateTicketDto dto)
-        {
-            var updated = await _service.UpdateAsync(id, dto);
-            if (!updated)
-                return NotFound("Ticket not found");
-
-            return NoContent();
-        }
-
-        // DELETE api/tickets/5   (only normal users, and only their own tickets)
-        [HttpDelete("{id}")]
-        [Authorize(Roles = "User")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            var ticket = await _service.GetByIdAsync(id);
-            if (ticket == null)
-                return NotFound("Ticket not found");
-
-            if (ticket.author_id != CurrentUserId)
-                return Forbid();
-
-            await _service.DeleteAsync(id);
-            return NoContent();
-        }
+        var ticket = await _service.GetByIdAsync(id);
+        return ticket is null ? NotFound() : Ok(ticket);
     }
+
+    [HttpGet("author/{authorId:int}")]
+    public async Task<ActionResult<IEnumerable<GetTicketDto>>> GetByAuthor(int authorId) =>
+        Ok(await _service.GetByAuthorAsync(authorId));
+
+    [HttpPost]
+    public async Task<ActionResult> Create(CreateTicketDto dto)
+    {
+        var id = await _service.CreateAsync(dto);
+        return CreatedAtAction(nameof(GetById), new { id }, new { ticketId = id });
+    }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult> Update(int id, UpdateTicketDto dto) =>
+        await _service.UpdateAsync(id, dto) ? NoContent() : NotFound();
+
+    [HttpDelete("{id:int}")]
+    public async Task<ActionResult> Delete(int id) =>
+        await _service.DeleteAsync(id) ? NoContent() : NotFound();
 }

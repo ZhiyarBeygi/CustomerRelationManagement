@@ -1,13 +1,8 @@
 using System.ComponentModel.DataAnnotations;
+namespace SupportTicketSystem.DTOs;
 
-namespace SupportTicketSystem.DTOs
+public class LoginDto
 {
-    public class LoginDto
-    {
-        [Required]
-        public string username { get; set; } = "";
-
-        [Required]
-        public string password { get; set; } = "";
-    }
+    [Required] public string Username { get; set; } = string.Empty;
+    [Required] public string Password { get; set; } = string.Empty;
 }

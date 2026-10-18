@@ -1,14 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+namespace SupportTicketSystem.DTOs;
 
-namespace SupportTicketSystem.DTOs
+public class UpdateUserDto
 {
-    public class UpdateUserDto
-    {
-        [Required, StringLength(100)]
-        public string username { get; set; } = "";
-
-        [Required, AllowedValues(1, 2, 3, 4, 5)]
-        public int role { get; set; }
-
-    }
+    [Required, StringLength(100, MinimumLength = 3)]
+    public string Username { get; set; } = string.Empty;
+    [Required]
+    public int RoleId { get; set; }
+    public int? DepartmentId { get; set; }
 }

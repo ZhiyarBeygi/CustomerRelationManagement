@@ -4,6 +4,6 @@ namespace SupportTicketSystem.Services.Interfaces
 {
     public interface ITokenService
     {
-        string CreateToken(UsersDto user);
+        string CreateToken(GetUsersDto user);
     }
 }

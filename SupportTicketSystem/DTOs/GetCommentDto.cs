@@ -1,12 +1,13 @@
-namespace SupportTicketSystem.DTOs
+namespace SupportTicketSystem.DTOs;
+
+public class GetCommentDto
 {
-    public class GetCommentDto
-    {
-        public int comment_id { get; set; }
-        public string title { get; set; } = "";
-        public string description { get; set; } = "";
-        public DateTime created_at { get; set; }
-        public int author_id { get; set; }
-        public int ticket_id { get; set; }
-    }
+    public int CommentId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int AuthorId { get; set; }
+    public string? AuthorUsername { get; set; }
+    public int TicketId { get; set; }
+    public bool IsInternal { get; set; }
 }

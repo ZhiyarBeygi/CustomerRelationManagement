@@ -1,13 +1,20 @@
-namespace SupportTicketSystem.DTOs
+namespace SupportTicketSystem.DTOs;
+
+public class GetTicketDto
 {
-    public class GetTicketDto
-    {
-        public int ticket_id { get; set; }
-        public string title { get; set; } = "";
-        public string description { get; set; } = "";
-        public string status { get; set; } = "";
-        public string priority { get; set; } = "";
-        public DateTime created_at { get; set; }
-        public int author_id { get; set; }
-    }
+    public int TicketId { get; set; }
+    public string Title { get; set; } = string.Empty;
+    public string Description { get; set; } = string.Empty;
+    public string Status { get; set; } = string.Empty;
+    public string Priority { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int AuthorId { get; set; }
+    public string? AuthorUsername { get; set; }
+    public int? CategoryId { get; set; }
+    public string? Category { get; set; }
+    public int? DepartmentId { get; set; }
+    public string? Department { get; set; }
+    public int? ReceiverId { get; set; }
+    public string? ReceiverUsername { get; set; }
+    public string? ReferenceCode { get; set; }
 }

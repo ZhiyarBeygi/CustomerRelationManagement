@@ -1,8 +1,7 @@
-namespace SupportTicketSystem.DTOs
+namespace SupportTicketSystem.DTOs;
+
+public class GetDepartmentsDto
 {
-    public class DepartmentDto
-    {
-        public int department_id { get; set; }
-        public string department { get; set; } = "";
-    }
+    public int DepartmentId { get; set; }
+    public string Department { get; set; } = string.Empty;
 }

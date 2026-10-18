@@ -1,10 +1,12 @@
-namespace SupportTicketSystem.DTOs
+namespace SupportTicketSystem.DTOs;
+
+public class GetUsersDto
 {
-    public class UsersDto
-    {
-        public int user_id { get; set; }
-        public string username { get; set; } = "";
-        public int role_id { get; set; }
-        public int department_id { get; set; }
-    }
+    public int UserId { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public DateTime CreatedAt { get; set; }
+    public int? RoleId { get; set; }
+    public string? Role { get; set; }
+    public int? DepartmentId { get; set; }
+    public string? Department { get; set; }
 }

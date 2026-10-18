@@ -1,38 +1,20 @@
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using SupportTicketSystem.Services.Interfaces;
+namespace SupportTicketSystem.Services;
 
-namespace SupportTicketSystem.Services
+public class TicketService : ITicketService
 {
-    public class TicketService : ITicketService
+    private readonly ITicketRepository _repository;
+    public TicketService(ITicketRepository repository) => _repository = repository;
+    public Task<IEnumerable<GetTicketDto>> GetAllAsync() => _repository.GetAllAsync();
+    public Task<IEnumerable<GetTicketDto>> GetByAuthorAsync(int authorId) => _repository.GetByAuthorAsync(authorId);
+    public Task<GetTicketDto?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
+    public Task<int> CreateAsync(CreateTicketDto dto) => _repository.CreateAsync(dto);
+    public async Task<bool> UpdateAsync(int id, UpdateTicketDto dto)
     {
-        private readonly ITicketRepository _tickets;
-        private readonly IUsersRepository _users;
-
-        public TicketService(ITicketRepository tickets, IUsersRepository users)
-        {
-            _tickets = tickets;
-            _users = users;
-        }
-
-        public Task<IEnumerable<GetTicketDto>> GetAllAsync() => _tickets.GetAllAsync();
-
-        public Task<GetTicketDto?> GetByIdAsync(int id) => _tickets.GetByIdAsync(id);
-
-        public Task<IEnumerable<GetTicketDto>> GetByAuthorAsync(int authorId) => _tickets.GetByAuthorAsync(authorId);
-
-        public async Task<GetTicketDto?> CreateAsync(CreateTicketDto dto, int authorId)
-        {
-            var author = await _users.GetByIdAsync(authorId);
-            if (author == null)
-                return null;
-
-            var newId = await _tickets.CreateAsync(dto, authorId);
-            return await _tickets.GetByIdAsync(newId);
-        }
-
-        public Task<bool> UpdateAsync(int id, UpdateTicketDto dto) => _tickets.UpdateAsync(id, dto);
-
-        public Task<bool> DeleteAsync(int id) => _tickets.DeleteAsync(id);
+        if (await _repository.GetByIdAsync(id) is null) return false;
+        return await _repository.UpdateAsync(id, dto);
     }
+    public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
 }

@@ -1,14 +1,12 @@
 using SupportTicketSystem.DTOs;
-
-namespace SupportTicketSystem.Repositories.Interfaces
+namespace SupportTicketSystem.Repositories.Interfaces;
+public interface IUsersRepository
 {
-    public interface IUsersRepository
-    {
-        Task<IEnumerable<UsersDto>> GetAllAsync();
-        Task<UsersDto?> GetByIdAsync(int id);
-        Task<bool> UsernameExistsAsync(string username);
-        Task CreateAsync(string username, string password, string role);
-        Task<UsersDto?> LoginAsync(string username, string password);
-        Task<bool> UpdateAsync(int id, UpdateUserDto dto);
-    }
+    Task<IEnumerable<GetUsersDto>> GetAllAsync();
+    Task<GetUsersDto?> GetByIdAsync(int id);
+    Task<GetUsersDto?> GetByUsernameAsync(string username);
+    Task<string?> GetPasswordHashByUsernameAsync(string username);
+    Task<int> CreateAsync(CreateUserDto dto, string passwordHash);
+    Task<bool> UpdateAsync(int id, UpdateUserDto dto);
+    Task<bool> UsernameExistsAsync(string username);
 }

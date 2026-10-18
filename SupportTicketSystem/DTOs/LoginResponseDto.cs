@@ -1,8 +1,10 @@
-namespace SupportTicketSystem.DTOs
+namespace SupportTicketSystem.DTOs;
+
+public class LoginResponseDto
 {
-    public class LoginResponseDto
-    {
-        public string token { get; set; } = "";
-        public UsersDto user { get; set; } = new UsersDto();
-    }
+    public int UserId { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public int? RoleId { get; set; }
+    public string? Role { get; set; }
+    public int? DepartmentId { get; set; }
 }
