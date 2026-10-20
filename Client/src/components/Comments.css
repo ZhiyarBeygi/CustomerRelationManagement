@@ -1,7 +1,7 @@
 .comments-toggle { margin-top: 10px; padding: 6px 14px; font-size: 0.9rem; }
 .comments { margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--line); }
-.comment { background: #eef2f8; border-left: 4px solid #7b8fb5; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; }
-.comment.mine { background: #e1f4f0; border-left-color: #2a9d8f; }
+.comment { background: #eef2f8; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; border-inline: 4px solid #7b8fb5; }
+.comment.mine { background: #e1f4f0; border-inline-start-color: #2a9d8f; }
 .comment p { margin: 4px 0; }
 .comments form { margin-top: 12px; }
 .comments input, .comments textarea { margin-bottom: 8px; }

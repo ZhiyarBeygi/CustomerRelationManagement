@@ -1,54 +1,98 @@
 import { useState } from "react";
 import Comments from "./Comments";
 
-// Shows one ticket. If onChange is given (admin page), status and priority become dropdowns.
-// If onDelete is given (user page), a Delete button is shown.
-export default function TicketCard({ ticket, onChange, onDelete }) {
+function statusClass(status) {
+  const normalized = String(status || "Pending").trim().toLowerCase();
+  if (normalized === "in progress" || normalized === "in-progress" || normalized === "inprogress") return "In-Progress";
+  if (normalized === "done" || normalized === "completed") return "Done";
+  return "Pending";
+}
+
+function statusBadge(status) {
+  const labels = {
+    "pending": "در انتظار",
+    "in progress": "در حال انجام",
+    "done": "تکمیل شده"
+  };
+
+  return labels[String(status || "").trim().toLowerCase()] || status || "—";
+}
+
+function formatDate(value) {
+  if (!value) return "Unknown date";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? "Unknown date" : date.toLocaleString();
+}
+function priorityLabel(priority){
+  const labels = {
+    high: "بالا",
+    medium: "متوسط",
+    low: "پایین"
+  }
+
+  return labels[String(priority || "").toLowerCase()] || priority || "—";
+}
+
+export default function TicketCard({ ticket, onChange }) {
   const [showComments, setShowComments] = useState(false);
+  const status = ticket.status || "Pending";
+  const statusCss = statusClass(status);
+
+
 
   return (
-    <div className={"card ticket " + ticket.status.replace(" ", "-")}>
-      <div className="row">
-        <h3>{ticket.title}</h3>
+    <article className={`card ticket ${statusCss}`}>
+      <div className="row ticket-heading">
+        <div>
+          <h3>{ticket.referenceCode ? `${ticket.referenceCode} · ` : ""}{ticket.title}</h3>
+          {ticket.authorUsername && <small>نویسنده:  {ticket.authorUsername}</small>}
+        </div>
         {onChange ? (
-          <div className="row">
+          <div className="row ticket-controls">
             <select
               aria-label="Priority"
               value={ticket.priority || "Medium"}
               onChange={(e) => onChange(ticket, { priority: e.target.value })}
             >
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
+              <option value="Low">Low</option>
+              <option value="Medium">Medium</option>
+              <option value="High">High</option>
             </select>
             <select
               aria-label="Status"
-              value={ticket.status}
+              value={status}
               onChange={(e) => onChange(ticket, { status: e.target.value })}
             >
-              <option>Pending</option>
-              <option>In Progress</option>
-              <option>Done</option>
+              <option value="Pending">Pending</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Done">Done</option>
             </select>
           </div>
         ) : (
-          <span className={"badge " + ticket.status.replace(" ", "-")}>{ticket.status}</span>
-        )}
+          <span className={`badge ${statusCss}`} dir="rtl">
+            {statusBadge(status)}
+          </span>        )}
       </div>
+
       <p>{ticket.description}</p>
       <small>
-        {onChange ? "" : `Priority: ${ticket.priority || "-"} | `}Opened {new Date(ticket.created_at).toLocaleString()}
+        {!onChange && 
+        (<span 
+          dir="rtl" style={{ unicodeBidi: "isolate" }}> اولویت: <bdi dir="rtl">{priorityLabel(ticket.priority)}</bdi>
+          {" · "}
+        </span>
+  )}        ساخته شده: {formatDate(ticket.createdAt)}
+        {ticket.category ? ` · دسته‌بندی: ${ticket.category}` : ""}
+        {ticket.department ? ` · دپارتمنت: ${ticket.department}` : ""}
+        {ticket.receiverUsername ? ` · مسئول: ${ticket.receiverUsername}` : ""}
       </small>
 
       <div className="card-actions">
-        <button className="secondary comments-toggle" onClick={() => setShowComments(!showComments)}>
-          {showComments ? "Hide comments" : "Comments"}
+        <button className="secondary comments-toggle" onClick={() => setShowComments((current) => !current)}>
+          {showComments ? "Hide comments" : "کامنت‌ها"}
         </button>
-        {onDelete && (
-          <button className="danger comments-toggle" onClick={() => onDelete(ticket)}>Delete ticket</button>
-        )}
       </div>
-      {showComments && <Comments ticketId={ticket.ticket_id} />}
-    </div>
+      {showComments && <Comments ticketId={ticket.ticketId} />}
+    </article>
   );
 }

@@ -1,9 +1,11 @@
 import { Navigate } from "react-router-dom";
-import { getUser } from "../auth";
+import { getUser, isAdminRole } from "../auth";
 
-export default function ProtectedRoute({ children, adminOnly }) {
+export default function ProtectedRoute({ children, adminOnly = false }) {
   const user = getUser();
-  if (!user) return <Navigate to="/login" />;
-  if (adminOnly && user.role !== "Admin") return <Navigate to="/tickets" />;
+
+  if (!user) return <Navigate to="/login" replace />;
+  if (adminOnly && !isAdminRole(user.role)) return <Navigate to="/tickets" replace />;
+
   return children;
 }
