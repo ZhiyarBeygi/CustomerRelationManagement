@@ -54,18 +54,18 @@ export default function TicketCard({ ticket, onChange }) {
               value={ticket.priority || "Medium"}
               onChange={(e) => onChange(ticket, { priority: e.target.value })}
             >
-              <option value="Low">Low</option>
-              <option value="Medium">Medium</option>
-              <option value="High">High</option>
+              <option value="Low">پایین</option>
+              <option value="Medium">متوسط</option>
+              <option value="High">بالا</option>
             </select>
             <select
               aria-label="Status"
               value={status}
               onChange={(e) => onChange(ticket, { status: e.target.value })}
             >
-              <option value="Pending">Pending</option>
-              <option value="In Progress">In Progress</option>
-              <option value="Done">Done</option>
+              <option value="Pending">در انتظار تائید</option>
+              <option value="In Progress">در حال انجام</option>
+              <option value="Done">بسته شده</option>
             </select>
           </div>
         ) : (

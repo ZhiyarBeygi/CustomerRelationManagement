@@ -1,11 +1,12 @@
-import { Link, Outlet, useNavigate } from "react-router-dom";
-import { getUser, clearAuth, isAdminRole } from "../auth";
+import { useState } from "react";
+import { Outlet, useNavigate } from "react-router-dom";
+import { getUser, clearAuth } from "../auth";
 import Sidebar from "./Sidebar";
 
 export default function Layout() {
+  const [collapsed, setCollapsed] = useState(false);
   const user = getUser();
   const navigate = useNavigate();
-  const isAdmin = isAdminRole(user?.role);
 
   function logout() {
     clearAuth();
@@ -17,28 +18,20 @@ export default function Layout() {
       <header className="topbar">
         <strong>مدیریت ارتباط با مشتری</strong>
 
-        <nav>
-          {isAdmin ? (
-            <Link to="/admin">مدیریت تیکت‌ها</Link>
-          ) : (
-            <>
-              <Link to="/tickets">تیکت‌های شما</Link>
-              <Link to="/createTicket">تیکت جدید</Link>
-            </>
-          )}
-        </nav>
 
-        <span className="who">
+        <span className="who" style={{ marginInlineStart: "auto" }}>
           {user?.username} ({user?.role || "User"})
         </span>
-
         <button className="secondary" onClick={logout}>
           خروج از حساب
         </button>
       </header>
 
       <div className="app-body" dir="rtl">
-        <Sidebar />
+        <Sidebar
+          collapsed={collapsed}
+          onToggleCollapse={() => setCollapsed((c) => !c)}
+        />
 
         <main className="page-content">
           <Outlet />

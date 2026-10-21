@@ -1,47 +1,51 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
-import { saveAuth } from "../auth";
+import { saveAuth, isAdminRole } from "../auth";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(() => {
-  if (sessionStorage.getItem("sessionExpired")) {
-    sessionStorage.removeItem("sessionExpired");
-    return "Your session has expired. Please log in again.";
-  }
-  return "";
-});
+    if (sessionStorage.getItem("sessionExpired")) {
+      sessionStorage.removeItem("sessionExpired");
+      return "جلسه شما منقضی شده. دوبار وارد شوید.";
+    }
+    return "";
+  });
+  const [submitting, setSubmitting] = useState(false);
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError("");
+    setSubmitting(true);
     try {
-      const data = await api("/api/users/login", {
+      const data = await api("/api/Users/login", {
         method: "POST",
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username: username.trim(), password }),
       });
       saveAuth(data);
-      navigate(data.user.role === "Admin" ? "/admin" : "/tickets");
+      navigate(isAdminRole(data.role ?? data.user?.role) ? "/admin" : "/tickets", { replace: true });
     } catch (err) {
       setError(err.message);
+    } finally {
+      setSubmitting(false);
     }
   }
 
   return (
     <form className="login panel panel-create" onSubmit={handleSubmit}>
-      <h1>Log in</h1>
-      <label>Username
-        <input value={username} onChange={(e) => setUsername(e.target.value)} autoFocus required />
+      <h1>ورود</h1>
+      <label>نام کاربری
+        <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus maxLength={100} required />
       </label>
-      <label>Password
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+      <label>رمز ورود
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
       </label>
-      {error && <p className="error">{error}</p>}
-      <button type="submit">Log in</button>
-      <p>No account? <Link to="/register">Create one</Link></p>
+      {error && <p className="error" role="alert">{error}</p>}
+      <button type="submit" disabled={submitting}>{submitting ? "Logging in…" : "ورود"}</button>
+      <p>اکانت ندارید؟ <Link to="/register">ساخت اکانت</Link></p>
     </form>
   );
 }

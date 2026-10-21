@@ -2,46 +2,36 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { getUser } from "../../auth";
-import Layout from "../../components/Layout";
 import TicketCard from "../../components/TicketCard";
 
 export default function MyTicketsPage() {
   const navigate = useNavigate();
+  const user = getUser();
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    api("/api/tickets/mine")
+    api(`/api/Tickets/author/${user.userId}`)
       .then(setTickets)
-      .catch((err) => setError(err.message));
-  }, []);
-
-  async function handleDelete(ticket) {
-    if (!window.confirm("Delete this ticket and all its comments?")) return;
-    setError("");
-    try {
-      await api(`/api/tickets/${ticket.ticket_id}`, { method: "DELETE" });
-      setTickets(tickets.filter((t) => t.ticket_id !== ticket.ticket_id));
-    } catch (err) {
-      setError(err.message);
-    }
-  }
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, [user.userId]);
 
   return (
-    <Layout>
+    <>
       <div className="row">
-        <h1>My tickets</h1>
-        <button onClick={() => navigate("/createTicket")}>New ticket</button>
+        <h1>تیکت‌های شما</h1>
+        <button onClick={() => navigate("/createTicket")}>تیکت جدید</button>
       </div>
-      {error && <p className="error">{error}</p>}
-
+      {error && <p className="error" role="alert">{error}</p>}
       <section className="panel panel-list">
-        <h2>Your tickets</h2>
-        {tickets.length === 0 && <p className="muted">You have no tickets yet.</p>}
-        {tickets.map((t) => (
-          <TicketCard key={t.ticket_id} ticket={t}/>
+        {loading && <p className="muted">در حال برگذاری…</p>}
+        {!loading && tickets.length === 0 && !error && <p className="muted">شما تیکتی ندارید.</p>}
+        {tickets.map((ticket) => (
+          <TicketCard key={ticket.ticketId} ticket={ticket} />
         ))}
       </section>
-    </Layout>
+    </>
   );
 }
