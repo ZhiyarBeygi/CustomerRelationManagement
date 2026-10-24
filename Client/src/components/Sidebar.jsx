@@ -1,94 +1,32 @@
-import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import { getUser, isAdminRole } from "../auth";
+import { getUser, isAdminRole, isExpertRole } from "../auth";
 import "./Sidebar.css";
 
-// The whole menu is data. To add a page later, add one line here.
-const menu = [
-  {
-    id: "tickets",
-    label: "تیکت‌ها",
-    icon: "🎫",
-    userOnly: true,
-    children: [
-      { path: "/tickets", label: "تیکت‌های من" },
-      { path: "/createTicket", label: "ایجاد تیکت جدید" },
-    ],
-  },
-  {
-    id: "admin",
-    label: "مدیریت",
-    icon: "🛠️",
-    adminOnly: true,
-    children: [{ path: "/admin", label: "مدیریت تیکت‌ها" }],
-  },
-];
-
-export default function Sidebar({ collapsed, onToggleCollapse }) {
+export default function Sidebar({ collapsed = false, onToggleCollapse = () => {} }) {
   const user = getUser();
   const isAdmin = isAdminRole(user?.role);
-
-  // all groups start open
-  const [openGroups, setOpenGroups] = useState(
-    Object.fromEntries(menu.map((group) => [group.id, true]))
-  );
-
-  function toggleGroup(id) {
-    setOpenGroups((current) => ({ ...current, [id]: !current[id] }));
-  }
-
-  // keep only the groups this user is allowed to see
-  const visibleMenu = menu.filter((group) => {
-    if (group.adminOnly) return isAdmin;
-    if (group.userOnly) return !isAdmin;
-    return true;
-  });
+  const isExpert = isExpertRole(user?.role);
 
   return (
-    <aside className={`sidebar ${collapsed ? "is-collapsed" : ""}`} dir="rtl">
+    <aside className={`sidebar${collapsed ? " is-collapsed" : ""}`} dir="rtl">
       <div className="sidebar-heading">
-        {!collapsed && <span>منو</span>}
-        <button
-          type="button"
-          className="sidebar-toggle"
-          onClick={onToggleCollapse}
-          aria-label={collapsed ? "باز کردن منو" : "بستن منو"}
-        >
+        {!collapsed && <span>منوی اصلی</span>}
+        <button type="button" className="sidebar-toggle" onClick={onToggleCollapse} aria-label={collapsed ? "باز کردن منو" : "جمع‌کردن منو"} title={collapsed ? "باز کردن منو" : "جمع‌کردن منو"}>
           {collapsed ? "«" : "»"}
         </button>
       </div>
-
-      <nav>
-        {visibleMenu.map((group) => (
-          <div key={group.id} className="sidebar-group">
-            <button
-              type="button"
-              className="sidebar-group-btn"
-              title={collapsed ? group.label : undefined}
-              onClick={() => toggleGroup(group.id)}
-            >
-              <span>{group.icon}</span>
-              {!collapsed && <span className="sidebar-group-label">{group.label}</span>}
-              {!collapsed && <span>{openGroups[group.id] ? "▾" : "▸"}</span>}
-            </button>
-
-            {!collapsed && openGroups[group.id] && (
-              <div className="sidebar-children">
-                {group.children.map((child) => (
-                  <NavLink
-                    key={child.path}
-                    to={child.path}
-                    className={({ isActive }) =>
-                      "sidebar-link" + (isActive ? " is-active" : "")
-                    }
-                  >
-                    {child.label}
-                  </NavLink>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+      <nav className="sidebar-nav" aria-label="ناوبری اصلی">
+        <NavLink title={collapsed ? "تیکت‌های من" : undefined} to="/tickets" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
+          {collapsed ? "🎫" : "تیکت‌های من"}
+        </NavLink>
+        <NavLink title={collapsed ? "ثبت تیکت جدید" : undefined} to="/createTicket" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
+          {collapsed ? "＋" : "ثبت تیکت جدید"}
+        </NavLink>
+        {(isAdmin || isExpert) && (
+          <NavLink title={collapsed ? (isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف رسیدگی به تیکت‌ها") : undefined} to="/admin" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
+            {collapsed ? "⚙" : isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف رسیدگی به تیکت‌ها"}
+          </NavLink>
+        )}
       </nav>
     </aside>
   );

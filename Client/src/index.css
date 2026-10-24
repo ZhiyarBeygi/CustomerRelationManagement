@@ -74,7 +74,7 @@ small, .muted { color: var(--muted); }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
 /* ---- forms ---- */
-label { display: block; margin-bottom: 14px; font-weight: 700; font-size: 14pt; }
+label { display: block; margin-bottom: 14px; font-weight: 700; font-size: 14pt; text-align: right; }
 input, textarea, select {
   display: block; width: 100%; margin-top: 5px; padding: 10px 12px; font: inherit;
   background: #fff; border: 1px solid var(--line); border-radius: 3px;
@@ -131,11 +131,24 @@ main > *, .login { animation: rise 0.35s ease both; }
 button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 button.danger { background: #b42318; color: #fff; }
 button.danger:hover { background: #8f1d14; }
-.ticket-heading { align-items: flex-start; }
-.ticket-heading > div:first-child { min-width: 0; }
+.ticket-heading { display: flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px; }
+
+.ticket-heading > div:first-child {flex: 1 1 auto; min-width: 0;}
 .ticket-heading h3 { overflow-wrap: anywhere; }
-.ticket-controls { flex-wrap: wrap; justify-content: flex-end; }
-.ticket-controls select { max-width: 150px; }
+.ticket-controls {
+  display: flex;
+  flex-wrap: wrap;
+  width: 50%;
+  justify-content: flex-start;
+  gap: 8px;
+  flex-shrink: 0;
+  direction: ltr;
+}
+
+.ticket-controls select {
+  direction: rtl;
+  text-align: right;
+}
 .comments h4 { margin: 0 0 10px; font-size: 0.98rem; }
 .comments .error { margin: 8px 0; }
 @media (max-width: 560px) {
@@ -143,7 +156,7 @@ button.danger:hover { background: #8f1d14; }
   .topbar nav { flex-basis: 100%; order: 3; flex-wrap: wrap; }
   .who { margin-inline-start: auto; }
   .row { align-items: flex-start; flex-wrap: wrap; }
-  .ticket-controls { width: 100%; justify-content: flex-start; }
+  .ticket-controls { width: 100%; justify-content: flex-start; flex-wrap: wrap; direction: ltr; }  
   .ticket-controls select { flex: 1; min-width: 110px; }
   .card-actions { flex-wrap: wrap; }
 }
@@ -163,3 +176,110 @@ button.danger:hover { background: #8f1d14; }
   min-width: 0;
   padding: 24px;
 }
+
+
+html { direction: rtl; }
+body { font-family: "Calibri", "Segoe UI", system-ui, sans-serif; }
+.topbar { margin-inline-end: 0; }
+.topbar strong::before { margin-inline-end: 10px; margin-inline-start: 0; }
+.panel { border-radius: 14px; }
+input, textarea, select, button { border-radius: 9px; }
+.error { border-radius: 8px; }
+.app-body { display: flex; align-items: stretch; min-height: calc(100vh - 60px); }
+.sidebar { flex: 0 0 260px; width: 260px; }
+.page-content { flex: 1; min-width: 0; max-width: none; margin: 0; padding: 24px; }
+.page-title-row { margin-bottom: 18px; }
+.page-title-row h1 { margin-bottom: 0; }
+.ticket-form { max-width: 900px; margin: 0 auto; }
+.ticket-form h1 { color: #0b5c52; }
+.form-actions { display: flex; justify-content: flex-start; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+.ticket-heading { align-items: flex-start; }
+.ticket-title-block { min-width: 0; }
+.ticket-title-block h3 { overflow-wrap: anywhere; }
+.ticket-controls { display: flex; align-items: flex-start; flex-wrap: wrap; justify-content: flex-start; gap: 8px; max-width: 58%; }
+.ticket-controls label { display: flex; flex-direction: column; gap: 3px; min-width: 135px; margin: 0; font-size: 0.82rem; }
+.ticket-controls select { max-width: 190px; width: 100%; margin: 0; padding: 7px 9px; font-size: 0.9rem; }
+.ticket-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; color: var(--muted); font-size: 0.88rem; }
+.ticket-meta strong { color: var(--ink); }
+.ticket-description { white-space: pre-wrap; overflow-wrap: anywhere; }
+.card-actions { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.inline-confirm { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 10px; padding: 10px; background: #fff2d5; border-radius: 8px; }
+.danger { background: #b42318; color: #fff; }
+.danger:hover { background: #8f1d14; }
+.staff-dashboard { display: grid; grid-template-columns: minmax(0, 1fr); gap: 18px; align-items: start; }
+.staff-dashboard.is-admin { grid-template-columns: minmax(260px, 320px) minmax(0, 1fr); }
+.section-heading { align-items: center; margin-bottom: 14px; }
+.section-heading h2 { margin: 0; }
+.section-heading button { padding: 7px 10px; font-size: 0.86rem; }
+.user-entry { display: flex; gap: 5px; align-items: stretch; margin-bottom: 8px; }
+.user-entry .user { margin: 0; flex: 1; min-width: 0; }
+.user-name-block { display: flex; flex-direction: column; gap: 3px; overflow-wrap: anywhere; }
+.user-edit-button { padding: 6px 9px; font-size: 0.82rem; }
+.user-form { margin-top: 16px; padding-top: 14px; border-top: 1px solid #cdbff0; }
+.user-form h3 { margin-bottom: 12px; }
+.user-form label { font-size: 0.9rem; }
+.user-form input, .user-form select { font-size: 0.92rem; }
+.full-width { width: 100%; margin-top: 10px; }
+.ticket-filters { display: grid; grid-template-columns: minmax(0, 1fr) 180px; gap: 12px; margin-bottom: 16px; }
+.ticket-filters label { margin: 0; font-size: 0.9rem; }
+.count-badge { border-radius: 999px; padding: 4px 10px; background: #d9e8ff; color: #1a4a99; white-space: nowrap; font-weight: 700; font-size: 0.85rem; }
+.checkbox-label { display: flex; align-items: center; gap: 8px; }
+.checkbox-label input { width: auto; margin: 0; }
+@media (max-width: 1000px) {
+  .staff-dashboard.is-admin { grid-template-columns: minmax(220px, 280px) minmax(0, 1fr); }
+  .ticket-controls { max-width: 100%; }
+}
+@media (max-width: 760px) {
+  .app-body { flex-direction: column; }
+  .sidebar { width: 100%; min-height: auto; flex: none; }
+  .page-content { width: 100%; padding: 16px; }
+  .staff-dashboard.is-admin { grid-template-columns: 1fr; }
+  .ticket-heading { flex-direction: column; }
+  .ticket-controls { width: 100%; max-width: none; }
+  .ticket-controls label { flex: 1 1 145px; }
+  .ticket-controls select { max-width: none; }
+  .ticket-filters { grid-template-columns: 1fr; }
+}
+
+.ticket-content-editor { width: 100%; }
+.ticket-content-editor label { margin-bottom: 10px; font-size: 0.9rem; }
+.ticket-content-editor textarea { min-height: 80px; }
+.sidebar.is-collapsed { width: 64px; flex-basis: 64px; }
+@media (max-width: 700px) { .sidebar.is-collapsed { width: 100%; flex-basis: auto; } }
+
+
+/* Particle background */
+#tsparticles {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* Keep the complete application above the particles */
+.app-content {
+  position: relative;
+  z-index: 1;
+}
+
+#tsparticles {
+  position: fixed;
+  inset: 0;
+  width: 200px;
+  height: 1000px;
+  z-index: 0;
+  pointer-events: none;
+}
+
+#tsparticles canvas {
+  display: block;
+}
+
+.app-content {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+

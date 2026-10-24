@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
-import { getUser, clearAuth } from "../auth";
+import { getUser, clearAuth, roleLabel } from "../auth";
 import Sidebar from "./Sidebar";
 
 export default function Layout() {
@@ -15,24 +15,16 @@ export default function Layout() {
 
   return (
     <>
-      <header className="topbar">
-        <strong>مدیریت ارتباط با مشتری</strong>
-
-
+      <header className="topbar" dir="rtl">
+        <strong>سامانه پشتیبانی و تیکت‌ها</strong>
         <span className="who" style={{ marginInlineStart: "auto" }}>
-          {user?.username} ({user?.role || "User"})
+          {user?.username} · {roleLabel(user?.role)}
         </span>
-        <button className="secondary" onClick={logout}>
-          خروج از حساب
-        </button>
+        <button className="secondary" onClick={logout}>خروج از حساب</button>
       </header>
 
       <div className="app-body" dir="rtl">
-        <Sidebar
-          collapsed={collapsed}
-          onToggleCollapse={() => setCollapsed((c) => !c)}
-        />
-
+        <Sidebar collapsed={collapsed} onToggleCollapse={() => setCollapsed((current) => !current)} />
         <main className="page-content">
           <Outlet />
         </main>

@@ -1,3 +1,4 @@
+/*
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { api } from "../api";
@@ -7,8 +8,6 @@ async function resolveDefaultUserRoleId() {
   const configuredRoleId = Number(import.meta.env.VITE_DEFAULT_USER_ROLE_ID);
   if (Number.isInteger(configuredRoleId) && configuredRoleId > 0) return configuredRoleId;
 
-  // The current backend does not expose a Roles lookup endpoint. Reuse the role ID
-  // from an existing normal user when one exists, without guessing database IDs.
   const users = await api("/api/Users");
   const normalUser = users.find((user) => String(user.role ?? "").trim().toLowerCase() === "user");
   return normalUser?.roleId ?? null;
@@ -28,9 +27,7 @@ export default function RegisterPage() {
     try {
       const roleId = await resolveDefaultUserRoleId();
       if (!roleId) {
-        throw new Error(
-          "The API does not expose role lookup yet. Set VITE_DEFAULT_USER_ROLE_ID in Client/.env to the RoleId for the normal User role, then restart Vite."
-        );
+        throw new Error("شناسه نقش کاربر عادی پیدا نشد. مقدار VITE_DEFAULT_USER_ROLE_ID را در فایل .env تنظیم کنید.");
       }
 
       await api("/api/Users", {
@@ -52,17 +49,18 @@ export default function RegisterPage() {
   }
 
   return (
-    <form className="login panel panel-create" onSubmit={handleSubmit}>
-      <h1>Create account</h1>
-      <label>Username
+    <form className="login panel panel-create" onSubmit={handleSubmit} dir="rtl">
+      <h1>ایجاد حساب کاربری</h1>
+      <label>نام کاربری
         <input value={username} onChange={(e) => setUsername(e.target.value)} minLength={3} maxLength={100} autoComplete="username" autoFocus required />
       </label>
-      <label>Password
+      <label>رمز عبور
         <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} minLength={8} maxLength={100} autoComplete="new-password" required />
       </label>
       {error && <p className="error" role="alert">{error}</p>}
-      <button type="submit" disabled={submitting}>{submitting ? "Creating account…" : "Create account"}</button>
-      <p>Already have an account? <Link to="/login">ورود</Link></p>
+      <button type="submit" disabled={submitting}>{submitting ? "در حال ساخت حساب…" : "ثبت‌نام"}</button>
+      <p>قبلاً حساب ساخته‌اید؟ <Link to="/login">وارد شوید</Link></p>
     </form>
   );
 }
+*/
