@@ -3,8 +3,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using SupportTicketSystem.Services.Interfaces;
 namespace SupportTicketSystem.Services;
-
-public class UsersService : IUserService
+public sealed class UsersService : IUserService
 {
     private readonly IUsersRepository _repository;
     public UsersService(IUsersRepository repository) => _repository = repository;
@@ -34,14 +33,8 @@ public class UsersService : IUserService
         if (storedHash is null || !VerifyPassword(dto.Password, storedHash)) return null;
         var user = await _repository.GetByUsernameAsync(dto.Username);
         if (user is null) return null;
-        return new LoginResponseDto
-        {
-            UserId = user.UserId,
-            Username = user.Username,
-            RoleId = user.RoleId,
-            Role = user.Role,
-            DepartmentId = user.DepartmentId
-        };
+        return new LoginResponseDto { UserId = user.UserId, Username = user.Username, RoleId = user.RoleId,
+            Role = user.Role, DepartmentId = user.DepartmentId };
     }
 
     private static string HashPassword(string password)

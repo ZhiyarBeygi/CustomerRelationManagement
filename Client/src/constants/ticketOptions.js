@@ -1,3 +1,5 @@
+// These IDs match the options that were already configured in the uploaded client.
+// The current API has no department/category lookup endpoints, so keep them centralized here.
 export const DEPARTMENTS = [
   { id: 1, label: "مالی" },
   { id: 2, label: "فناوری اطلاعات" },

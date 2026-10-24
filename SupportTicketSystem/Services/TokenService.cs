@@ -1,3 +1,4 @@
+
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -18,24 +19,52 @@ namespace SupportTicketSystem.Services
 
         public string CreateToken(GetUsersDto user)
         {
-            var claims = new[]
+            var claims = new List<System.Security.Claims.Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-                new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.Role, user.Role ?? "")
+                new(
+                    ClaimTypes.NameIdentifier,
+                    user.UserId.ToString()
+                ),
+                new(
+                    ClaimTypes.Name,
+                    user.Username
+                )
             };
 
-            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]!));
-            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            if (!string.IsNullOrWhiteSpace(user.Role))
+            {
+                claims.Add(
+                    new System.Security.Claims.Claim(
+                        ClaimTypes.Role,
+                        user.Role
+                    )
+                );
+            }
+
+            var jwtKey = _config["Jwt:Key"]
+                ?? throw new InvalidOperationException(
+                    "JWT signing key is missing."
+                );
+
+            var key = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(jwtKey)
+            );
+
+            var credentials = new SigningCredentials(
+                key,
+                SecurityAlgorithms.HmacSha256
+            );
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
                 audience: _config["Jwt:Audience"],
                 claims: claims,
                 expires: DateTime.UtcNow.AddMinutes(15),
-                signingCredentials: credentials);
+                signingCredentials: credentials
+            );
 
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            return new JwtSecurityTokenHandler()
+                .WriteToken(token);
         }
     }
 }

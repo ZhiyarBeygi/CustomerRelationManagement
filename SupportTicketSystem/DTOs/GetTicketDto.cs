@@ -1,6 +1,5 @@
 namespace SupportTicketSystem.DTOs;
-
-public class GetTicketDto
+public sealed class GetTicketDto
 {
     public int TicketId { get; set; }
     public string Title { get; set; } = string.Empty;

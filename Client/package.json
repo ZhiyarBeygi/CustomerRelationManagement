@@ -9,20 +9,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tsparticles/engine": "^4.4.0",
-    "@tsparticles/react": "^4.4.0",
-    "@tsparticles/slim": "^4.4.0",
-    "particles-express": "^0.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.28.0"
+    "react-router-dom": "^6.28.0",
+    "@tsparticles/engine": "^4.4.0",
+    "@tsparticles/react": "^4.4.0",
+    "@tsparticles/slim": "^4.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.3",
     "vite": "^5.4.10"
-  },
-  "allowScripts": {
-    "esbuild@0.21.5": true,
-    "@tsparticles/engine@4.4.0": true
   }
 }

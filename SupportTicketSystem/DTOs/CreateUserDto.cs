@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 namespace SupportTicketSystem.DTOs;
-
-public class CreateUserDto
+public sealed class CreateUserDto
 {
     [Required, StringLength(100, MinimumLength = 3)]
     public string Username { get; set; } = string.Empty;

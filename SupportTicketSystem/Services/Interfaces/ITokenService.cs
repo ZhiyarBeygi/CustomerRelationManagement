@@ -1,3 +1,4 @@
+
 using SupportTicketSystem.DTOs;
 
 namespace SupportTicketSystem.Services.Interfaces

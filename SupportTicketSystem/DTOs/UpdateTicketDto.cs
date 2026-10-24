@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 namespace SupportTicketSystem.DTOs;
 
-public class UpdateTicketDto
+public sealed class UpdateTicketDto
 {
     [Required, StringLength(100)]
     public string Title { get; set; } = string.Empty;

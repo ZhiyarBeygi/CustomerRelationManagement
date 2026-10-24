@@ -1,124 +1,79 @@
 
-import { useMemo } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import Particles, { ParticlesProvider } from "@tsparticles/react";
-import { loadSlim } from "@tsparticles/slim";
-
+import ParticlesBackground from "./components/ParticlesBackground";
 import ProtectedRoute from "./components/ProtectedRoute";
 import LoginPage from "./pages/LoginPage";
-// import RegisterPage from "./pages/RegisterPage";
 import MyTicketsPage from "./pages/UserTickets/MyTicketsPage";
 import CreateTicketPage from "./pages/UserTickets/CreateTicketsPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
+import ExpertPage from "./pages/ExpertPage/ExpertPage"
 import { getUser, homePath } from "./auth";
 import Layout from "./components/Layout";
-
-const initParticles = async (engine) => {
-  await loadSlim(engine);
-};
 
 function HomeRedirect() {
   return <Navigate to={homePath(getUser())} replace />;
 }
 
-export default function App() {
-  const particleOptions = useMemo(
-    () => ({
-      fullScreen: {
-        enable: false,
-      },
-      fpsLimit: 60,
-      detectRetina: true,
-      particles: {
-        number: {
-          value: 65,
-          density: {
-            enable: true,
-          },
-        },
-        color: {
-          value: "#0f6f78",
-        },
-        links: {
-          enable: true,
-          color: "#0f6f78",
-          distance: 150,
-          opacity: 0.3,
-          width: 1,
-        },
-        move: {
-          enable: true,
-          speed: 0.8,
-          outModes: {
-            default: "out",
-          },
-        },
-        opacity: {
-          value: 0.6,
-        },
-        shape: {
-          type: "circle",
-        },
-        size: {
-          value: {
-            min: 2,
-            max: 4,
-          },
-        },
-      },
-    }),
-    []
-  );
-
+function LoginWithParticles() {
   return (
-    <ParticlesProvider load={initParticles}>
-      <Particles
-        id="tsparticles"
-        options={particleOptions}
-        particlesLoaded={(container) => {
-          console.log("Particles loaded:", container);
-        }}
-      />
+    <>
+      <ParticlesBackground />
+      <LoginPage />
+    </>
+  );
+}
 
-      <div className="app-content">
-        <Routes>
-          <Route path="/" element={<HomeRedirect />} />
+export default function App() {
+  return (
+    <div className="app-content">
+      <Routes>
+        <Route path="/" element={<HomeRedirect />} />
 
-          <Route path="/login" element={<LoginPage />} />
-          {/* <Route path="/register" element={<RegisterPage />} /> */}
+        <Route
+          path="/login"
+          element={<LoginWithParticles />}
+        />
 
-          <Route element={<Layout />}>
-            <Route
-              path="/tickets"
-              element={
-                <ProtectedRoute>
-                  <MyTicketsPage />
-                </ProtectedRoute>
-              }
-            />
+        <Route element={<Layout />}>
+          <Route
+            path="/tickets"
+            element={
+              <ProtectedRoute>
+                <MyTicketsPage />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/createTicket"
-              element={
-                <ProtectedRoute>
-                  <CreateTicketPage />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/createTicket"
+            element={
+              <ProtectedRoute>
+                <CreateTicketPage />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/admin"
-              element={
-                <ProtectedRoute staffOnly>
-                  <AdminPage />
-                </ProtectedRoute>
-              }
-            />
-          </Route>
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute staffOnly>
+                <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+        </Route>
 
-          <Route path="*" element={<HomeRedirect />} />
-        </Routes>
-      </div>
-    </ParticlesProvider>
+          <Route
+            path="/expert"
+            element={
+              <ProtectedRoute experOnly>
+                <ExpertPage/>
+              </ProtectedRoute>
+            }
+          />        
+
+        <Route path="*" element={<HomeRedirect />} />
+      </Routes>
+    </div>
   );
 }

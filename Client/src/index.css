@@ -74,7 +74,7 @@ small, .muted { color: var(--muted); }
 .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
 
 /* ---- forms ---- */
-label { display: block; margin-bottom: 14px; font-weight: 700; font-size: 14pt; text-align: right; }
+label { display: block; margin-bottom: 14px; font-weight: 700; font-size: 14pt; }
 input, textarea, select {
   display: block; width: 100%; margin-top: 5px; padding: 10px 12px; font: inherit;
   background: #fff; border: 1px solid var(--line); border-radius: 3px;
@@ -104,7 +104,7 @@ button.cancel:hover { background-color: rgb(203, 16, 16);}
 .badge.In-Progress { background: #d9e8ff; color: #1a4a99; }
 .badge.Done { background: #d6f0de; color: #1c6b36; }
 
-/* ---- login and register ---- */
+/* ---- login ---- */
 .login { max-width: 400px; margin: 10vh auto 0; padding: 30px; }
 .login::before { content: "مدیریت ارتباط با مشتری"; display: block; margin-bottom: 8px; font-weight: 700; font-size: 1.1rem; color: #0b5c52; opacity: 0.8; text-align: center;}
 .login button { width: 100%; margin-top: 4px; }
@@ -131,17 +131,30 @@ main > *, .login { animation: rise 0.35s ease both; }
 button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 button.danger { background: #b42318; color: #fff; }
 button.danger:hover { background: #8f1d14; }
-.ticket-heading { display: flex; width: 100%; align-items: flex-start; justify-content: space-between; gap: 12px; }
-
-.ticket-heading > div:first-child {flex: 1 1 auto; min-width: 0;}
 .ticket-heading h3 { overflow-wrap: anywhere; }
+.ticket-heading {
+  display: flex;
+  flex-direction: row;
+  direction: rtl;
+  justify-content: space-between;
+  align-items: flex-start;
+  width: 100%;
+  gap: 12px;
+}
+
+.ticket-heading > div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 .ticket-controls {
   display: flex;
   flex-wrap: wrap;
-  width: 50%;
   justify-content: flex-start;
+  width: 50%;
   gap: 8px;
   flex-shrink: 0;
+  margin-inline-start: auto;
   direction: ltr;
 }
 
@@ -149,6 +162,7 @@ button.danger:hover { background: #8f1d14; }
   direction: rtl;
   text-align: right;
 }
+
 .comments h4 { margin: 0 0 10px; font-size: 0.98rem; }
 .comments .error { margin: 8px 0; }
 @media (max-width: 560px) {
@@ -156,7 +170,7 @@ button.danger:hover { background: #8f1d14; }
   .topbar nav { flex-basis: 100%; order: 3; flex-wrap: wrap; }
   .who { margin-inline-start: auto; }
   .row { align-items: flex-start; flex-wrap: wrap; }
-  .ticket-controls { width: 100%; justify-content: flex-start; flex-wrap: wrap; direction: ltr; }  
+  .ticket-controls { width: 100%; justify-content: flex-start; }
   .ticket-controls select { flex: 1; min-width: 110px; }
   .card-actions { flex-wrap: wrap; }
 }
@@ -178,6 +192,7 @@ button.danger:hover { background: #8f1d14; }
 }
 
 
+/* صفحه‌بندی و فرم‌های به‌روزشده */
 html { direction: rtl; }
 body { font-family: "Calibri", "Segoe UI", system-ui, sans-serif; }
 .topbar { margin-inline-end: 0; }
@@ -247,9 +262,8 @@ input, textarea, select, button { border-radius: 9px; }
 .sidebar.is-collapsed { width: 64px; flex-basis: 64px; }
 @media (max-width: 700px) { .sidebar.is-collapsed { width: 100%; flex-basis: auto; } }
 
-
-/* Particle background */
-#tsparticles {
+/* ---- animated particle background ---- */
+.particles-bg {
   position: fixed;
   inset: 0;
   width: 100%;
@@ -258,28 +272,11 @@ input, textarea, select, button { border-radius: 9px; }
   pointer-events: none;
 }
 
-/* Keep the complete application above the particles */
-.app-content {
-  position: relative;
-  z-index: 1;
-}
-
-#tsparticles {
-  position: fixed;
-  inset: 0;
-  width: 200px;
-  height: 1000px;
-  z-index: 0;
-  pointer-events: none;
-}
-
-#tsparticles canvas {
+.particles-bg canvas {
   display: block;
 }
 
 .app-content {
   position: relative;
   z-index: 1;
-  min-height: 100vh;
 }
-

@@ -2,8 +2,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using SupportTicketSystem.Services.Interfaces;
 namespace SupportTicketSystem.Services;
-
-public class CommentService : ICommentService
+public sealed class CommentService : ICommentService
 {
     private readonly ICommentRepository _repository;
     private readonly ITicketRepository _tickets;

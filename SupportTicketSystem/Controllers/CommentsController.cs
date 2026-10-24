@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
 namespace SupportTicketSystem.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
-public class CommentsController : ControllerBase
+public sealed class CommentsController : ControllerBase
 {
     private readonly ICommentService _service;
     public CommentsController(ICommentService service) => _service = service;

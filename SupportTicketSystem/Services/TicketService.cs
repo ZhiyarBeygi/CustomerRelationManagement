@@ -2,8 +2,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using SupportTicketSystem.Services.Interfaces;
 namespace SupportTicketSystem.Services;
-
-public class TicketService : ITicketService
+public sealed class TicketService : ITicketService
 {
     private readonly ITicketRepository _repository;
     public TicketService(ITicketRepository repository) => _repository = repository;

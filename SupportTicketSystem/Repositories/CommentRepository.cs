@@ -4,8 +4,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using System.Data;
 namespace SupportTicketSystem.Repositories;
-
-public class CommentRepository : ICommentRepository
+public sealed class CommentRepository : ICommentRepository
 {
     private readonly string _connectionString;
     public CommentRepository(IConfiguration configuration) =>
@@ -29,11 +28,8 @@ public class CommentRepository : ICommentRepository
         using var connection = new SqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>("usp_Comment_Create", new
         {
-            title = dto.Title,
-            description = dto.Description,
-            author_id = dto.AuthorId,
-            ticket_id = dto.TicketId,
-            is_internal = dto.IsInternal
+            title = dto.Title, description = dto.Description, author_id = dto.AuthorId,
+            ticket_id = dto.TicketId, is_internal = dto.IsInternal
         }, commandType: CommandType.StoredProcedure);
     }
     public async Task<bool> UpdateAsync(int id, UpdateCommentDto dto)
@@ -41,9 +37,7 @@ public class CommentRepository : ICommentRepository
         using var connection = new SqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>("usp_Comment_Update", new
         {
-            comment_id = id,
-            title = dto.Title,
-            description = dto.Description
+            comment_id = id, title = dto.Title, description = dto.Description
         }, commandType: CommandType.StoredProcedure) > 0;
     }
     public async Task<bool> DeleteAsync(int id)

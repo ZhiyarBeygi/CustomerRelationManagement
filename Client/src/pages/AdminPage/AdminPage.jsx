@@ -11,6 +11,7 @@ export default function AdminPage() {
   const isExpert = isExpertRole(currentUser?.role);
   const navigate = useNavigate();
   const [users, setUsers] = useState([]);
+  const [roles, setRoles] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
@@ -30,10 +31,14 @@ export default function AdminPage() {
     setLoading(true);
     setError("");
     try {
-      const ticketList = await api("/api/Tickets");
+      const [ticketList, userList, roleList] = await Promise.all([
+        api("/api/Tickets"),
+        api("/api/Users"),
+        api("/api/Roles"),
+      ]);
       setTickets(Array.isArray(ticketList) ? ticketList : []);
-      const userList = await api("/api/Users");
       setUsers(Array.isArray(userList) ? userList : []);
+      setRoles(Array.isArray(roleList) ? roleList : []);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -43,26 +48,12 @@ export default function AdminPage() {
 
   useEffect(() => { loadData(); }, [isAdmin, isExpert]);
 
-  const roleOptions = useMemo(() => {
-    const seen = new Map();
-    const configuredRoles = [
-      { id: import.meta.env.VITE_ROLE_ID_USER, role: "User" },
-      { id: import.meta.env.VITE_ROLE_ID_ADMIN, role: "Admin" },
-      { id: import.meta.env.VITE_ROLE_ID_EXPERT, role: "Expert" },
-    ];
-
-    for (const item of configuredRoles) {
-      const id = Number(item.id);
-      if (Number.isInteger(id) && id > 0) seen.set(id, item.role);
-    }
-
-    // Existing user records provide role IDs when the backend has no roles lookup endpoint.
-    for (const user of users) {
-      if (user.roleId != null && user.role) seen.set(Number(user.roleId), user.role);
-    }
-
-    return [...seen.entries()].map(([id, role]) => ({ id, role }));
-  }, [users]);
+  const roleOptions = useMemo(
+    () => roles
+      .filter((role) => role.roleId != null && role.role)
+      .map((role) => ({ id: role.roleId, role: role.role })),
+    [roles]
+  );
 
   const experts = useMemo(() => users.filter((user) => isExpertRole(user.role)), [users]);
 
@@ -109,7 +100,7 @@ export default function AdminPage() {
     e.preventDefault();
     setError("");
     if (!roleId) {
-      setError("شناسه نقش انتخاب‌شده موجود نیست. چون API فعلی مسیر دریافت نقش‌ها را ندارد، شناسه نقش را در فایل .env تنظیم کنید یا مطمئن شوید کاربری با آن نقش قبلاً در سامانه وجود دارد.");
+      setError("لطفاً یک نقش انتخاب کنید.");
       return;
     }
     setUserSubmitting(true);
@@ -288,12 +279,6 @@ export default function AdminPage() {
 
               {!loading && users.length === 0 && (
                 <p className="muted">کاربری پیدا نشد.</p>
-              )}
-
-              {!roleOptions.some((role) => isExpertRole(role.role)) && (
-                <p className="muted">
-                  برای ایجاد حساب کارشناس، شناسه نقش کارشناس را در فایل تنظیمات وارد کنید.
-                </p>
               )}
 
               {!showUserForm && selected && (

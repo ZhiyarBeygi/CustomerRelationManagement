@@ -4,8 +4,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using System.Data;
 namespace SupportTicketSystem.Repositories;
-
-public class UsersRepository : IUsersRepository
+public sealed class UsersRepository : IUsersRepository
 {
     private readonly string _connectionString;
     public UsersRepository(IConfiguration configuration) =>

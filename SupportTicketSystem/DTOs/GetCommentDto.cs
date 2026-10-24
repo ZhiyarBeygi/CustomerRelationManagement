@@ -1,6 +1,5 @@
 namespace SupportTicketSystem.DTOs;
-
-public class GetCommentDto
+public sealed class GetCommentDto
 {
     public int CommentId { get; set; }
     public string Title { get; set; } = string.Empty;

@@ -2,10 +2,9 @@ using Microsoft.AspNetCore.Mvc;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
 namespace SupportTicketSystem.Controllers;
-
 [ApiController]
 [Route("api/[controller]")]
-public class TicketsController : ControllerBase
+public sealed class TicketsController : ControllerBase
 {
     private readonly ITicketService _service;
     public TicketsController(ITicketService service) => _service = service;

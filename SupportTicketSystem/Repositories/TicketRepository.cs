@@ -4,8 +4,7 @@ using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Repositories.Interfaces;
 using System.Data;
 namespace SupportTicketSystem.Repositories;
-
-public class TicketRepository : ITicketRepository
+public sealed class TicketRepository : ITicketRepository
 {
     private readonly string _connectionString;
     public TicketRepository(IConfiguration configuration) =>
@@ -34,14 +33,8 @@ public class TicketRepository : ITicketRepository
         using var connection = new SqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>("usp_Ticket_Create", new
         {
-            title = dto.Title,
-            description = dto.Description,
-            status = dto.Status,
-            priority = dto.Priority,
-            author_id = dto.AuthorId,
-            category_id = dto.CategoryId,
-            department_id = dto.DepartmentId,
-            receiver_id = dto.ReceiverId
+            title = dto.Title, description = dto.Description, status = dto.Status, priority = dto.Priority,
+            author_id = dto.AuthorId, category_id = dto.CategoryId, department_id = dto.DepartmentId, receiver_id = dto.ReceiverId
         }, commandType: CommandType.StoredProcedure);
     }
     public async Task<bool> UpdateAsync(int id, UpdateTicketDto dto)
@@ -49,14 +42,8 @@ public class TicketRepository : ITicketRepository
         using var connection = new SqlConnection(_connectionString);
         return await connection.ExecuteScalarAsync<int>("usp_Ticket_Update", new
         {
-            ticket_id = id,
-            title = dto.Title,
-            description = dto.Description,
-            status = dto.Status,
-            priority = dto.Priority,
-            category_id = dto.CategoryId,
-            department_id = dto.DepartmentId,
-            receiver_id = dto.ReceiverId
+            ticket_id = id, title = dto.Title, description = dto.Description, status = dto.Status, priority = dto.Priority,
+            category_id = dto.CategoryId, department_id = dto.DepartmentId, receiver_id = dto.ReceiverId
         }, commandType: CommandType.StoredProcedure) > 0;
     }
     public async Task<bool> DeleteAsync(int id)
