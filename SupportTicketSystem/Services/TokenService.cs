@@ -1,4 +1,3 @@
-
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -6,65 +5,68 @@ using Microsoft.IdentityModel.Tokens;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
 
-namespace SupportTicketSystem.Services
+namespace SupportTicketSystem.Services;
+
+public sealed class TokenService : ITokenService
 {
-    public class TokenService : ITokenService
+    private readonly IConfiguration _configuration;
+
+    public TokenService(IConfiguration configuration)
     {
-        private readonly IConfiguration _config;
+        _configuration = configuration;
+    }
 
-        public TokenService(IConfiguration config)
+    public string CreateToken(LoginResponseDto user)
+    {
+        var claims = new List<Claim>
         {
-            _config = config;
+            new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
+            new(ClaimTypes.Name, user.Username),
+            new(ClaimTypes.Role, CanonicalRole(user.Role))
+        };
+
+        if (user.DepartmentId.HasValue)
+        {
+            claims.Add(new Claim("departmentId", user.DepartmentId.Value.ToString()));
         }
 
-        public string CreateToken(GetUsersDto user)
+        var keyText = _configuration["Jwt:Key"];
+        if (string.IsNullOrWhiteSpace(keyText) || Encoding.UTF8.GetByteCount(keyText) < 32)
         {
-            var claims = new List<System.Security.Claims.Claim>
-            {
-                new(
-                    ClaimTypes.NameIdentifier,
-                    user.UserId.ToString()
-                ),
-                new(
-                    ClaimTypes.Name,
-                    user.Username
-                )
-            };
-
-            if (!string.IsNullOrWhiteSpace(user.Role))
-            {
-                claims.Add(
-                    new System.Security.Claims.Claim(
-                        ClaimTypes.Role,
-                        user.Role
-                    )
-                );
-            }
-
-            var jwtKey = _config["Jwt:Key"]
-                ?? throw new InvalidOperationException(
-                    "JWT signing key is missing."
-                );
-
-            var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(jwtKey)
-            );
-
-            var credentials = new SigningCredentials(
-                key,
-                SecurityAlgorithms.HmacSha256
-            );
-
-            var token = new JwtSecurityToken(
-                issuer: _config["Jwt:Issuer"],
-                audience: _config["Jwt:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(15),
-                signingCredentials: credentials
-            );
-
-            return new JwtSecurityTokenHandler()
-                .WriteToken(token);
+            throw new InvalidOperationException("JWT signing key must be configured and at least 32 bytes long.");
         }
+
+        var issuer = _configuration["Jwt:Issuer"];
+        var audience = _configuration["Jwt:Audience"];
+        if (string.IsNullOrWhiteSpace(issuer) || string.IsNullOrWhiteSpace(audience))
+        {
+            throw new InvalidOperationException("JWT issuer and audience must be configured.");
+        }
+
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyText));
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            issuer: issuer,
+            audience: audience,
+            claims: claims,
+            expires: DateTime.UtcNow.AddMinutes(15),
+            signingCredentials: credentials);
+
+        return new JwtSecurityTokenHandler().WriteToken(token);
+    }
+
+    private static string CanonicalRole(string? role)
+    {
+        var normalized = new string((role ?? string.Empty)
+            .Normalize(NormalizationForm.FormKC)
+            .ToLowerInvariant()
+            .Where(char.IsLetterOrDigit)
+            .ToArray());
+
+        if (normalized.Contains("admin") || normalized.Contains("مدیر")) return "Admin";
+        if (normalized.Contains("expert") || normalized.Contains("technician") ||
+            normalized.Contains("agent") || normalized.Contains("کارشناس") ||
+            normalized.Contains("متخصص")) return "Expert";
+        return "User";
     }
 }

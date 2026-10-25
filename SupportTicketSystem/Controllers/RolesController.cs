@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
@@ -6,6 +7,7 @@ namespace SupportTicketSystem.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class RolesController : ControllerBase
 {
     private readonly IRolesService _service;

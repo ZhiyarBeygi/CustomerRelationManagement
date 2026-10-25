@@ -7,5 +7,4 @@ public interface ITicketRepository
     Task<GetTicketDto?> GetByIdAsync(int id);
     Task<int> CreateAsync(CreateTicketDto dto);
     Task<bool> UpdateAsync(int id, UpdateTicketDto dto);
-    Task<bool> DeleteAsync(int id);
 }

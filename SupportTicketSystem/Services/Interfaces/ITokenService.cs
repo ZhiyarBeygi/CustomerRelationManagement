@@ -1,10 +1,8 @@
-
 using SupportTicketSystem.DTOs;
 
-namespace SupportTicketSystem.Services.Interfaces
+namespace SupportTicketSystem.Services.Interfaces;
+
+public interface ITokenService
 {
-    public interface ITokenService
-    {
-        string CreateToken(GetUsersDto user);
-    }
+    string CreateToken(LoginResponseDto user);
 }

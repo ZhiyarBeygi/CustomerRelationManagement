@@ -1,12 +1,11 @@
-// These IDs match the options that were already configured in the uploaded client.
-// The current API has no department/category lookup endpoints, so keep them centralized here.
+// Department IDs match the database.
 export const DEPARTMENTS = [
-  { id: 1, label: "مالی" },
-  { id: 2, label: "فناوری اطلاعات" },
-  { id: 3, label: "منابع انسانی" },
-  { id: 4, label: "اداری و مدیریت" },
-  { id: 5, label: "امنیت" },
-  { id: 6, label: "خدمات مشتریان" },
+  { id: 1, label: "فناوری اطلاعات" }, // IT
+  { id: 2, label: "مالی" },           // Finance
+  { id: 3, label: "منابع انسانی" },   // HR
+  { id: 8, label: "اداری و مدیریت" }, // Administration
+  { id: 9, label: "امنیت" },          // Security
+  { id: 10, label: "خدمات مشتریان" }, // Customer Service
 ];
 
 export const CATEGORIES = [
@@ -24,27 +23,40 @@ export function categoryLabel(id) {
   return CATEGORIES.find((item) => item.id === Number(id))?.label || "—";
 }
 
-
 const DEPARTMENT_TRANSLATIONS = new Map([
-  ["finance", "مالی"], ["it", "فناوری اطلاعات"], ["information technology", "فناوری اطلاعات"],
-  ["hr", "منابع انسانی"], ["human resources", "منابع انسانی"], ["administration", "اداری و مدیریت"],
-  ["management", "اداری و مدیریت"], ["security", "امنیت"], ["customer service", "خدمات مشتریان"],
+  ["finance", "مالی"],
+  ["it", "فناوری اطلاعات"],
+  ["information technology", "فناوری اطلاعات"],
+  ["hr", "منابع انسانی"],
+  ["human resources", "منابع انسانی"],
+  ["administration", "اداری و مدیریت"],
+  ["management", "اداری و مدیریت"],
+  ["security", "امنیت"],
+  ["customer service", "خدمات مشتریان"],
 ]);
+
 const CATEGORY_TRANSLATIONS = new Map([
-  ["finance", "مالی"], ["hardware", "سخت‌افزار"], ["software", "نرم‌افزار"],
-  ["other", "سایر"], ["others", "سایر"],
+  ["finance", "مالی"],
+  ["hardware", "سخت‌افزار"],
+  ["software", "نرم‌افزار"],
+  ["other", "سایر"],
+  ["others", "سایر"],
 ]);
 
 export function translateDepartment(value, id) {
   const byId = DEPARTMENTS.find((item) => item.id === Number(id));
+
   if (byId) return byId.label;
+
   const normalized = String(value ?? "").trim().toLowerCase();
   return DEPARTMENT_TRANSLATIONS.get(normalized) || value || "—";
 }
 
 export function translateCategory(value, id) {
   const byId = CATEGORIES.find((item) => item.id === Number(id));
+
   if (byId) return byId.label;
+
   const normalized = String(value ?? "").trim().toLowerCase();
   return CATEGORY_TRANSLATIONS.get(normalized) || value || "—";
 }

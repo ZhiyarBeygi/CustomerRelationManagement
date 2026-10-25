@@ -22,9 +22,14 @@ export default function Sidebar({ collapsed = false, onToggleCollapse = () => {}
         <NavLink title={collapsed ? "ثبت تیکت جدید" : undefined} to="/createTicket" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
           {collapsed ? "＋" : "ثبت تیکت جدید"}
         </NavLink>
-        {(isAdmin || isExpert) && (
-          <NavLink title={collapsed ? (isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف رسیدگی به تیکت‌ها") : undefined} to="/admin" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
-            {collapsed ? "⚙" : isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف رسیدگی به تیکت‌ها"}
+        {isAdmin && (
+          <NavLink title={collapsed ? "مدیریت کاربران و تیکت‌ها" : undefined} to="/admin" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
+            {collapsed ? "⚙" : "مدیریت کاربران و تیکت‌ها"}
+          </NavLink>
+        )}
+        {isExpert && (
+          <NavLink title={collapsed ? "صف کارشناسی" : undefined} to="/expert" className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}>
+            {collapsed ? "✓" : "صف کارشناسی"}
           </NavLink>
         )}
       </nav>

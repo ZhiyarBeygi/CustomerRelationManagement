@@ -1,13 +1,23 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SupportTicketSystem.DTOs;
 using SupportTicketSystem.Services.Interfaces;
+
 namespace SupportTicketSystem.Controllers;
+
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public sealed class UsersController : ControllerBase
 {
     private readonly IUserService _service;
-    public UsersController(IUserService service) => _service = service;
+    private readonly ITokenService _tokenService;
+
+    public UsersController(IUserService service, ITokenService tokenService)
+    {
+        _service = service;
+        _tokenService = tokenService;
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetUsersDto>>> GetAll() => Ok(await _service.GetAllAsync());
@@ -22,21 +32,38 @@ public sealed class UsersController : ControllerBase
     [HttpPost]
     public async Task<ActionResult> Create(CreateUserDto dto)
     {
-        try { var id = await _service.CreateAsync(dto); return CreatedAtAction(nameof(GetById), new { id }, new { userId = id }); }
-        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        try
+        {
+            var id = await _service.CreateAsync(dto);
+            return CreatedAtAction(nameof(GetById), new { id }, new { userId = id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
     [HttpPut("{id:int}")]
     public async Task<ActionResult> Update(int id, UpdateUserDto dto)
     {
-        try { return await _service.UpdateAsync(id, dto) ? NoContent() : NotFound(); }
-        catch (InvalidOperationException ex) { return Conflict(new { message = ex.Message }); }
+        try
+        {
+            return await _service.UpdateAsync(id, dto) ? NoContent() : NotFound();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
     }
 
+    [AllowAnonymous]
     [HttpPost("login")]
-    public async Task<ActionResult<LoginResponseDto>> Login(LoginDto dto)
+    public async Task<ActionResult> Login(LoginDto dto)
     {
-        var result = await _service.LoginAsync(dto);
-        return result is null ? Unauthorized(new { message = "Invalid username or password." }) : Ok(result);
+        var user = await _service.LoginAsync(dto);
+        if (user is null) return Unauthorized(new { message = "Invalid username or password." });
+
+        var token = _tokenService.CreateToken(user);
+        return Ok(new { token, user });
     }
 }

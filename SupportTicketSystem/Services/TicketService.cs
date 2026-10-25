@@ -15,5 +15,4 @@ public sealed class TicketService : ITicketService
         if (await _repository.GetByIdAsync(id) is null) return false;
         return await _repository.UpdateAsync(id, dto);
     }
-    public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
 }

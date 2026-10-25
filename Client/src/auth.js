@@ -88,8 +88,9 @@ export function roleLabel(role) {
 
 export function homePath(user) {
   if (!user) return "/login";
-  return isSupportRole(user.role) ? "/admin" : "/tickets";
+  if (isAdminRole(user.role)) return "/admin";
   if (isExpertRole(user.role)) return "/expert";
+  return "/tickets";
 }
 
 export function clearAuth() {

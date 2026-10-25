@@ -32,18 +32,4 @@ public sealed class CommentRepository : ICommentRepository
             ticket_id = dto.TicketId, is_internal = dto.IsInternal
         }, commandType: CommandType.StoredProcedure);
     }
-    public async Task<bool> UpdateAsync(int id, UpdateCommentDto dto)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.ExecuteScalarAsync<int>("usp_Comment_Update", new
-        {
-            comment_id = id, title = dto.Title, description = dto.Description
-        }, commandType: CommandType.StoredProcedure) > 0;
-    }
-    public async Task<bool> DeleteAsync(int id)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.ExecuteScalarAsync<int>("usp_Comment_Delete",
-            new { comment_id = id }, commandType: CommandType.StoredProcedure) > 0;
-    }
 }

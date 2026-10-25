@@ -46,10 +46,4 @@ public sealed class TicketRepository : ITicketRepository
             category_id = dto.CategoryId, department_id = dto.DepartmentId, receiver_id = dto.ReceiverId
         }, commandType: CommandType.StoredProcedure) > 0;
     }
-    public async Task<bool> DeleteAsync(int id)
-    {
-        using var connection = new SqlConnection(_connectionString);
-        return await connection.ExecuteScalarAsync<int>("usp_Ticket_Delete",
-            new { ticket_id = id }, commandType: CommandType.StoredProcedure) > 0;
-    }
 }

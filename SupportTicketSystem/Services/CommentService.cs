@@ -16,11 +16,4 @@ public sealed class CommentService : ICommentService
             throw new KeyNotFoundException("Ticket was not found.");
         return await _repository.CreateAsync(dto);
     }
-    public async Task<bool> UpdateAsync(int id, UpdateCommentDto dto)
-    {
-        var existing = await _repository.GetByIdAsync(id, null);
-        if (existing is null) return false;
-        return await _repository.UpdateAsync(id, dto);
-    }
-    public Task<bool> DeleteAsync(int id) => _repository.DeleteAsync(id);
 }

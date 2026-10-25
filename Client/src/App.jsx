@@ -6,7 +6,7 @@ import LoginPage from "./pages/LoginPage";
 import MyTicketsPage from "./pages/UserTickets/MyTicketsPage";
 import CreateTicketPage from "./pages/UserTickets/CreateTicketsPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
-import ExpertPage from "./pages/ExpertPage/ExpertPage"
+import ExpertPage from "./pages/ExpertPage/ExpertPage";
 import { getUser, homePath } from "./auth";
 import Layout from "./components/Layout";
 
@@ -56,21 +56,20 @@ export default function App() {
           <Route
             path="/admin"
             element={
-              <ProtectedRoute staffOnly>
+              <ProtectedRoute adminOnly>
                 <AdminPage />
               </ProtectedRoute>
             }
           />
-        </Route>
-
           <Route
             path="/expert"
             element={
-              <ProtectedRoute experOnly>
-                <ExpertPage/>
+              <ProtectedRoute expertOnly>
+                <ExpertPage />
               </ProtectedRoute>
             }
-          />        
+          />
+        </Route>
 
         <Route path="*" element={<HomeRedirect />} />
       </Routes>
