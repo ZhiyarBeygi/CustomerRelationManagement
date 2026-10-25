@@ -1,10 +1,10 @@
 // Department IDs match the database.
 export const DEPARTMENTS = [
   { id: 1, label: "فناوری اطلاعات" }, // IT
-  { id: 2, label: "مالی" },           // Finance
-  { id: 3, label: "منابع انسانی" },   // HR
+  { id: 2, label: "مالی" }, // Finance
+  { id: 3, label: "منابع انسانی" }, // HR
   { id: 8, label: "اداری و مدیریت" }, // Administration
-  { id: 9, label: "امنیت" },          // Security
+  { id: 9, label: "امنیت" }, // Security
   { id: 10, label: "خدمات مشتریان" }, // Customer Service
 ];
 
@@ -14,14 +14,6 @@ export const CATEGORIES = [
   { id: 3, label: "نرم‌افزار" },
   { id: 4, label: "سایر" },
 ];
-
-export function departmentLabel(id) {
-  return DEPARTMENTS.find((item) => item.id === Number(id))?.label || "—";
-}
-
-export function categoryLabel(id) {
-  return CATEGORIES.find((item) => item.id === Number(id))?.label || "—";
-}
 
 const DEPARTMENT_TRANSLATIONS = new Map([
   ["finance", "مالی"],
@@ -48,7 +40,9 @@ export function translateDepartment(value, id) {
 
   if (byId) return byId.label;
 
-  const normalized = String(value ?? "").trim().toLowerCase();
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase();
   return DEPARTMENT_TRANSLATIONS.get(normalized) || value || "—";
 }
 
@@ -57,6 +51,8 @@ export function translateCategory(value, id) {
 
   if (byId) return byId.label;
 
-  const normalized = String(value ?? "").trim().toLowerCase();
+  const normalized = String(value ?? "")
+    .trim()
+    .toLowerCase();
   return CATEGORY_TRANSLATIONS.get(normalized) || value || "—";
 }

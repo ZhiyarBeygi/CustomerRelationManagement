@@ -1,4 +1,3 @@
-
 import { useMemo } from "react";
 import Particles from "@tsparticles/react";
 
@@ -38,17 +37,11 @@ export default function ParticlesBackground() {
         opacity: { value: 0.1 },
         shape: { type: "circle" },
         size: { value: { min: 0.5, max: 3 } },
-        },
+      },
       detectRetina: true,
     }),
     []
   );
 
-  return (
-    <Particles
-      id="tsparticles"
-      options={options}
-      className="particles-bg"
-    />
-  );
+  return <Particles id="tsparticles" options={options} className="particles-bg" />;
 }

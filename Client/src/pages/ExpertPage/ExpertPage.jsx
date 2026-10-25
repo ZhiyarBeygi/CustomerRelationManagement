@@ -4,7 +4,12 @@ import { getUser } from "../../auth";
 import Comments from "../../components/Comments";
 import { translateDepartment } from "../../constants/ticketOptions";
 
-const normalize = (value) => String(value ?? "").normalize("NFKC").trim().toLowerCase().replace(/[\s_\-./]+/g, " ");
+const normalize = (value) =>
+  String(value ?? "")
+    .normalize("NFKC")
+    .trim()
+    .toLowerCase()
+    .replace(/[\s_\-./]+/g, " ");
 
 function statusKey(value) {
   return normalize(value);
@@ -29,7 +34,9 @@ function statusClass(status) {
 }
 
 function priorityLabel(priority) {
-  return ({ low: "پایین", medium: "متوسط", high: "بالا" })[normalize(priority)] || priority || "نامشخص";
+  return (
+    { low: "پایین", medium: "متوسط", high: "بالا" }[normalize(priority)] || priority || "نامشخص"
+  );
 }
 
 function formatDate(value) {
@@ -39,8 +46,11 @@ function formatDate(value) {
 }
 
 function belongsToDepartment(ticket, expert) {
-  return expert?.departmentId != null && ticket?.departmentId != null &&
-    Number(expert.departmentId) === Number(ticket.departmentId);
+  return (
+    expert?.departmentId != null &&
+    ticket?.departmentId != null &&
+    Number(expert.departmentId) === Number(ticket.departmentId)
+  );
 }
 
 export default function ExpertPage() {
@@ -57,7 +67,10 @@ export default function ExpertPage() {
   const [submittingRequest, setSubmittingRequest] = useState(false);
   const [message, setMessage] = useState("");
 
-  const hasDepartment = expert?.departmentId != null && Number.isInteger(Number(expert.departmentId)) && Number(expert.departmentId) > 0;
+  const hasDepartment =
+    expert?.departmentId != null &&
+    Number.isInteger(Number(expert.departmentId)) &&
+    Number(expert.departmentId) > 0;
 
   const loadTickets = useCallback(async () => {
     if (!expert?.userId) {
@@ -78,7 +91,9 @@ export default function ExpertPage() {
     setError("");
     try {
       const result = await api("/api/Tickets");
-      setTickets(Array.isArray(result) ? result.filter((ticket) => belongsToDepartment(ticket, expert)) : []);
+      setTickets(
+        Array.isArray(result) ? result.filter((ticket) => belongsToDepartment(ticket, expert)) : []
+      );
     } catch (err) {
       setTickets([]);
       setError(err.message || "دریافت تیکت‌ها ناموفق بود.");
@@ -87,15 +102,22 @@ export default function ExpertPage() {
     }
   }, [expert?.userId, expert?.departmentId, expert?.department, hasDepartment]);
 
-  useEffect(() => { loadTickets(); }, [loadTickets]);
+  useEffect(() => {
+    loadTickets();
+  }, [loadTickets]);
 
   const visibleTickets = useMemo(() => {
     const search = normalize(query);
     return tickets.filter((ticket) => {
       if (statusFilter !== "all" && statusKey(ticket.status) !== statusFilter) return false;
       if (!search) return true;
-      return [ticket.title, ticket.description, ticket.referenceCode, ticket.authorUsername, ticket.receiverUsername]
-        .some((value) => normalize(value).includes(search));
+      return [
+        ticket.title,
+        ticket.description,
+        ticket.referenceCode,
+        ticket.authorUsername,
+        ticket.receiverUsername,
+      ].some((value) => normalize(value).includes(search));
     });
   }, [tickets, query, statusFilter]);
 
@@ -155,11 +177,21 @@ export default function ExpertPage() {
               : "برای حساب کاربری شما دپارتمانی تعیین نشده است."}
           </p>
         </div>
-        <button type="button" onClick={loadTickets} disabled={loading}>به‌روزرسانی</button>
+        <button type="button" onClick={loadTickets} disabled={loading}>
+          به‌روزرسانی
+        </button>
       </div>
 
-      {error && <p className="error" role="alert">{error}</p>}
-      {message && <p className="success-message" role="status">{message}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      {message && (
+        <p className="success-message" role="status">
+          {message}
+        </p>
+      )}
 
       {!hasDepartment && (
         <section className="panel">
@@ -176,11 +208,20 @@ export default function ExpertPage() {
           </div>
 
           <div className="ticket-filters">
-            <label>جست‌وجو
-              <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="عنوان، شرح یا کد تیکت…" />
+            <label>
+              جست‌وجو
+              <input
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                placeholder="عنوان، شرح یا کد تیکت…"
+              />
             </label>
-            <label>فیلتر وضعیت
-              <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)}>
+            <label>
+              فیلتر وضعیت
+              <select
+                value={statusFilter}
+                onChange={(event) => setStatusFilter(event.target.value)}
+              >
                 <option value="all">همه وضعیت‌ها</option>
                 <option value="pending">در انتظار</option>
                 <option value="in progress">در حال انجام</option>
@@ -190,56 +231,114 @@ export default function ExpertPage() {
           </div>
 
           {loading && <p className="muted">در حال بارگذاری تیکت‌ها…</p>}
-          {!loading && visibleTickets.length === 0 && !error && <p className="muted">تیکتی در دپارتمان شما با این فیلترها پیدا نشد.</p>}
+          {!loading && visibleTickets.length === 0 && !error && (
+            <p className="muted">تیکتی در دپارتمان شما با این فیلترها پیدا نشد.</p>
+          )}
 
           {visibleTickets.map((ticket) => (
             <article className={`card ticket ${statusClass(ticket.status)}`} key={ticket.ticketId}>
               <div className="row ticket-heading">
                 <div className="ticket-title-block">
-                  <h3>{ticket.referenceCode ? `${ticket.referenceCode} · ` : ""}{ticket.title}</h3>
+                  <h3>
+                    {ticket.referenceCode ? `${ticket.referenceCode} · ` : ""}
+                    {ticket.title}
+                  </h3>
                   {ticket.authorUsername && <small>ثبت‌کننده: {ticket.authorUsername}</small>}
                 </div>
-                <span className={`badge ${statusClass(ticket.status)}`} dir="rtl">{statusLabel(ticket.status)}</span>
+                <span className={`badge ${statusClass(ticket.status)}`} dir="rtl">
+                  {statusLabel(ticket.status)}
+                </span>
               </div>
 
               <p className="ticket-description">{ticket.description}</p>
               <div className="ticket-meta">
-                <span><strong>اولویت:</strong> {priorityLabel(ticket.priority)}</span>
-                <span><strong>دپارتمان:</strong> {translateDepartment(ticket.department, ticket.departmentId)}</span>
-                {ticket.category && <span><strong>دسته‌بندی:</strong> {ticket.category}</span>}
-                {ticket.receiverUsername && <span><strong>کارشناس مسئول:</strong> {ticket.receiverUsername}</span>}
-                <span><strong>تاریخ ثبت:</strong> {formatDate(ticket.createdAt)}</span>
+                <span>
+                  <strong>اولویت:</strong> {priorityLabel(ticket.priority)}
+                </span>
+                <span>
+                  <strong>دپارتمان:</strong>{" "}
+                  {translateDepartment(ticket.department, ticket.departmentId)}
+                </span>
+                {ticket.category && (
+                  <span>
+                    <strong>دسته‌بندی:</strong> {ticket.category}
+                  </span>
+                )}
+                {ticket.receiverUsername && (
+                  <span>
+                    <strong>کارشناس مسئول:</strong> {ticket.receiverUsername}
+                  </span>
+                )}
+                <span>
+                  <strong>تاریخ ثبت:</strong> {formatDate(ticket.createdAt)}
+                </span>
               </div>
 
               <div className="expert-ticket-actions">
-                <button type="button" className="secondary" onClick={() => beginPriorityRequest(ticket)}>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => beginPriorityRequest(ticket)}
+                >
                   درخواست تغییر اولویت
                 </button>
                 <button
                   type="button"
                   className="secondary"
-                  onClick={() => setExpandedComments((current) => ({ ...current, [ticket.ticketId]: !current[ticket.ticketId] }))}
+                  onClick={() =>
+                    setExpandedComments((current) => ({
+                      ...current,
+                      [ticket.ticketId]: !current[ticket.ticketId],
+                    }))
+                  }
                 >
-                  {expandedComments[ticket.ticketId] ? "بستن دیدگاه‌ها" : "دیدگاه‌ها و افزودن دیدگاه"}
+                  {expandedComments[ticket.ticketId]
+                    ? "بستن دیدگاه‌ها"
+                    : "دیدگاه‌ها و افزودن دیدگاه"}
                 </button>
               </div>
 
               {requestTicketId === ticket.ticketId && (
-                <form className="priority-request-form" onSubmit={(event) => submitPriorityRequest(event, ticket)}>
+                <form
+                  className="priority-request-form"
+                  onSubmit={(event) => submitPriorityRequest(event, ticket)}
+                >
                   <h4>درخواست تغییر اولویت برای مدیر</h4>
-                  <p className="muted">این انتخاب اولویت تیکت را تغییر نمی‌دهد؛ فقط پیشنهاد شما را برای بررسی مدیر ثبت می‌کند.</p>
-                  <label>اولویت پیشنهادی
-                    <select value={requestedPriority} onChange={(event) => setRequestedPriority(event.target.value)} required>
+                  <p className="muted">
+                    این انتخاب اولویت تیکت را تغییر نمی‌دهد؛ فقط پیشنهاد شما را برای بررسی مدیر ثبت
+                    می‌کند.
+                  </p>
+                  <label>
+                    اولویت پیشنهادی
+                    <select
+                      value={requestedPriority}
+                      onChange={(event) => setRequestedPriority(event.target.value)}
+                      required
+                    >
                       <option value="Low">پایین</option>
                       <option value="Medium">متوسط</option>
                       <option value="High">بالا</option>
                     </select>
                   </label>
-                  <label>دلیل درخواست
-                    <textarea value={priorityReason} onChange={(event) => setPriorityReason(event.target.value)} maxLength={300} required placeholder="دلیل نیاز به تغییر اولویت را بنویسید…" />
+                  <label>
+                    دلیل درخواست
+                    <textarea
+                      value={priorityReason}
+                      onChange={(event) => setPriorityReason(event.target.value)}
+                      maxLength={300}
+                      required
+                      placeholder="دلیل نیاز به تغییر اولویت را بنویسید…"
+                    />
                   </label>
                   <div className="form-actions">
-                    <button type="button" className="secondary" onClick={() => setRequestTicketId(null)} disabled={submittingRequest}>انصراف</button>
+                    <button
+                      type="button"
+                      className="secondary"
+                      onClick={() => setRequestTicketId(null)}
+                      disabled={submittingRequest}
+                    >
+                      انصراف
+                    </button>
                     <button type="submit" disabled={submittingRequest}>
                       {submittingRequest ? "در حال ثبت درخواست…" : "ارسال درخواست به مدیر"}
                     </button>

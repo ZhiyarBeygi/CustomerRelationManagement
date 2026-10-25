@@ -11,7 +11,9 @@ export default function CreateTicketPage() {
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("Medium");
   const [categoryId, setCategoryId] = useState("");
-  const [departmentId, setDepartmentId] = useState(user?.departmentId ? String(user.departmentId) : "");
+  const [departmentId, setDepartmentId] = useState(
+    user?.departmentId ? String(user.departmentId) : ""
+  );
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
@@ -44,36 +46,64 @@ export default function CreateTicketPage() {
   return (
     <form className="panel panel-create ticket-form" onSubmit={handleCreate} dir="rtl">
       <h1>ثبت تیکت جدید</h1>
-      <p className="muted">موضوع و دپارتمان مرتبط را انتخاب کنید تا درخواست به تیم مناسب ارجاع شود.</p>
-      <label>عنوان تیکت
+      <p className="muted">
+        موضوع و دپارتمان مرتبط را انتخاب کنید تا درخواست به تیم مناسب ارجاع شود.
+      </p>
+      <label>
+        عنوان تیکت
         <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} required />
       </label>
-      <label>شرح درخواست
-        <textarea value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} required />
+      <label>
+        شرح درخواست
+        <textarea
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          maxLength={500}
+          required
+        />
       </label>
-      <label>اولویت
+      <label>
+        اولویت
         <select value={priority} onChange={(e) => setPriority(e.target.value)}>
           <option value="Low">پایین</option>
           <option value="Medium">متوسط</option>
           <option value="High">بالا</option>
         </select>
       </label>
-      <label>دسته‌بندی
+      <label>
+        دسته‌بندی
         <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
           <option value="">انتخاب دسته‌بندی (اختیاری)</option>
-          {CATEGORIES.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+          {CATEGORIES.map((category) => (
+            <option key={category.id} value={category.id}>
+              {category.label}
+            </option>
+          ))}
         </select>
       </label>
-      <label>دپارتمان مسئول
+      <label>
+        دپارتمان مسئول
         <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)} required>
           <option value="">انتخاب دپارتمان</option>
-          {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{department.label}</option>)}
+          {DEPARTMENTS.map((department) => (
+            <option key={department.id} value={department.id}>
+              {department.label}
+            </option>
+          ))}
         </select>
       </label>
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <div className="form-actions">
-        <button type="button" className="cancel" onClick={() => navigate(-1)}>لغو</button>
-        <button type="submit" disabled={submitting}>{submitting ? "در حال ثبت…" : "ثبت تیکت"}</button>
+        <button type="button" className="cancel" onClick={() => navigate(-1)}>
+          لغو
+        </button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? "در حال ثبت…" : "ثبت تیکت"}
+        </button>
       </div>
     </form>
   );

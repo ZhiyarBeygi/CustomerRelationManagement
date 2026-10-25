@@ -24,7 +24,9 @@ export default function MyTicketsPage() {
     }
   }
 
-  useEffect(() => { loadTickets(); }, [user.userId]);
+  useEffect(() => {
+    loadTickets();
+  }, [user.userId]);
 
   async function updateTicket(ticket, changes) {
     setError("");
@@ -42,7 +44,9 @@ export default function MyTicketsPage() {
           receiverId: updated.receiverId ?? null,
         }),
       });
-      setTickets((current) => current.map((item) => item.ticketId === ticket.ticketId ? updated : item));
+      setTickets((current) =>
+        current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
+      );
       return true;
     } catch (err) {
       setError(err.message);
@@ -56,13 +60,24 @@ export default function MyTicketsPage() {
         <h1>تیکت‌های من</h1>
         <button onClick={() => navigate("/createTicket")}>ثبت تیکت جدید</button>
       </div>
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       <section className="panel panel-list">
         <h2>درخواست‌های ثبت‌شده</h2>
         {loading && <p className="muted">در حال بارگذاری تیکت‌ها…</p>}
-        {!loading && tickets.length === 0 && !error && <p className="muted">هنوز تیکتی ثبت نکرده‌اید.</p>}
+        {!loading && tickets.length === 0 && !error && (
+          <p className="muted">هنوز تیکتی ثبت نکرده‌اید.</p>
+        )}
         {tickets.map((ticket) => (
-          <TicketCard key={ticket.ticketId} ticket={ticket} onChange={updateTicket} canEditContent />
+          <TicketCard
+            key={ticket.ticketId}
+            ticket={ticket}
+            onChange={updateTicket}
+            canEditContent
+          />
         ))}
       </section>
     </div>

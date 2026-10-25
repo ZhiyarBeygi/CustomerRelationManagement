@@ -1,10 +1,17 @@
 import { useState } from "react";
 import Comments from "./Comments";
-import { getUser } from "../auth";
-import { CATEGORIES, DEPARTMENTS, translateCategory, translateDepartment } from "../constants/ticketOptions";
+import {
+  CATEGORIES,
+  DEPARTMENTS,
+  translateCategory,
+  translateDepartment,
+} from "../constants/ticketOptions";
 
 function normalizeStatus(status) {
-  return String(status || "Pending").trim().toLowerCase().replaceAll("-", " ");
+  return String(status || "Pending")
+    .trim()
+    .toLowerCase()
+    .replaceAll("-", " ");
 }
 
 function statusClass(status) {
@@ -34,7 +41,15 @@ function statusOptionValue(status) {
 
 function priorityLabel(priority) {
   const labels = { low: "پایین", medium: "متوسط", high: "بالا" };
-  return labels[String(priority || "").trim().toLowerCase()] || priority || "—";
+  return (
+    labels[
+      String(priority || "")
+        .trim()
+        .toLowerCase()
+    ] ||
+    priority ||
+    "—"
+  );
 }
 
 function formatDate(value) {
@@ -56,7 +71,6 @@ export default function TicketCard({
   const [editDescription, setEditDescription] = useState(ticket.description || "");
   const [savingContent, setSavingContent] = useState(false);
   const [actionError, setActionError] = useState("");
-  const me = getUser();
   const status = ticket.status || "Pending";
   const statusCss = statusClass(status);
 
@@ -90,24 +104,47 @@ export default function TicketCard({
         <div className="ticket-title-block">
           {editingContent ? (
             <form className="ticket-content-editor" onSubmit={saveContent}>
-              <label>عنوان تیکت
-                <input value={editTitle} onChange={(e) => setEditTitle(e.target.value)} maxLength={100} required />
+              <label>
+                عنوان تیکت
+                <input
+                  value={editTitle}
+                  onChange={(e) => setEditTitle(e.target.value)}
+                  maxLength={100}
+                  required
+                />
               </label>
-              <label>شرح تیکت
-                <textarea value={editDescription} onChange={(e) => setEditDescription(e.target.value)} maxLength={500} required />
+              <label>
+                شرح تیکت
+                <textarea
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  maxLength={500}
+                  required
+                />
               </label>
               <div className="card-actions">
-                <button type="submit" disabled={savingContent}>{savingContent ? "در حال ذخیره…" : "ذخیره تغییرات"}</button>
-                <button type="button" className="secondary" onClick={() => {
-                  setEditingContent(false);
-                  setEditTitle(ticket.title || "");
-                  setEditDescription(ticket.description || "");
-                }}>انصراف</button>
+                <button type="submit" disabled={savingContent}>
+                  {savingContent ? "در حال ذخیره…" : "ذخیره تغییرات"}
+                </button>
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() => {
+                    setEditingContent(false);
+                    setEditTitle(ticket.title || "");
+                    setEditDescription(ticket.description || "");
+                  }}
+                >
+                  انصراف
+                </button>
               </div>
             </form>
           ) : (
             <>
-              <h3>{ticket.referenceCode ? `${ticket.referenceCode} · ` : ""}{ticket.title}</h3>
+              <h3>
+                {ticket.referenceCode ? `${ticket.referenceCode} · ` : ""}
+                {ticket.title}
+              </h3>
               {ticket.authorUsername && <small>ثبت‌کننده: {ticket.authorUsername}</small>}
             </>
           )}
@@ -115,78 +152,159 @@ export default function TicketCard({
 
         {canManageFields && onChange ? (
           <div className="ticket-controls">
-            <label>اولویت
-              <select aria-label="اولویت" value={ticket.priority || "Medium"} onChange={(e) => updateField({ priority: e.target.value })}>
+            <label>
+              اولویت
+              <select
+                aria-label="اولویت"
+                value={ticket.priority || "Medium"}
+                onChange={(e) => updateField({ priority: e.target.value })}
+              >
                 <option value="Low">پایین</option>
                 <option value="Medium">متوسط</option>
                 <option value="High">بالا</option>
               </select>
             </label>
-            <label>وضعیت
-              <select aria-label="وضعیت" value={statusOptionValue(status)} onChange={(e) => updateField({ status: e.target.value })}>
+            <label>
+              وضعیت
+              <select
+                aria-label="وضعیت"
+                value={statusOptionValue(status)}
+                onChange={(e) => updateField({ status: e.target.value })}
+              >
                 <option value="Pending">در انتظار</option>
                 <option value="In Progress">در حال انجام</option>
                 <option value="Done">بسته‌شده</option>
               </select>
             </label>
-            <label>دپارتمان
-              <select aria-label="دپارتمان" value={ticket.departmentId ?? ""} onChange={(e) => updateField({
-                departmentId: e.target.value ? Number(e.target.value) : null,
-                department: DEPARTMENTS.find((d) => d.id === Number(e.target.value))?.label ?? null,
-              })}>
+            <label>
+              دپارتمان
+              <select
+                aria-label="دپارتمان"
+                value={ticket.departmentId ?? ""}
+                onChange={(e) =>
+                  updateField({
+                    departmentId: e.target.value ? Number(e.target.value) : null,
+                    department:
+                      DEPARTMENTS.find((d) => d.id === Number(e.target.value))?.label ?? null,
+                  })
+                }
+              >
                 <option value="">بدون دپارتمان</option>
-                {DEPARTMENTS.map((department) => <option key={department.id} value={department.id}>{department.label}</option>)}
+                {DEPARTMENTS.map((department) => (
+                  <option key={department.id} value={department.id}>
+                    {department.label}
+                  </option>
+                ))}
               </select>
             </label>
-            <label>دسته‌بندی
-              <select aria-label="دسته‌بندی" value={ticket.categoryId ?? ""} onChange={(e) => updateField({
-                categoryId: e.target.value ? Number(e.target.value) : null,
-                category: CATEGORIES.find((c) => c.id === Number(e.target.value))?.label ?? null,
-              })}>
+            <label>
+              دسته‌بندی
+              <select
+                aria-label="دسته‌بندی"
+                value={ticket.categoryId ?? ""}
+                onChange={(e) =>
+                  updateField({
+                    categoryId: e.target.value ? Number(e.target.value) : null,
+                    category:
+                      CATEGORIES.find((c) => c.id === Number(e.target.value))?.label ?? null,
+                  })
+                }
+              >
                 <option value="">بدون دسته‌بندی</option>
-                {CATEGORIES.map((category) => <option key={category.id} value={category.id}>{category.label}</option>)}
+                {CATEGORIES.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.label}
+                  </option>
+                ))}
               </select>
             </label>
             {experts.length > 0 && (
-              <label>کارشناس مسئول
-                <select aria-label="کارشناس مسئول" value={ticket.receiverId ?? ""} onChange={(e) => updateField({
-                  receiverId: e.target.value ? Number(e.target.value) : null,
-                  receiverUsername: experts.find((expert) => expert.userId === Number(e.target.value))?.username ?? null,
-                })}>
+              <label>
+                کارشناس مسئول
+                <select
+                  aria-label="کارشناس مسئول"
+                  value={ticket.receiverId ?? ""}
+                  onChange={(e) =>
+                    updateField({
+                      receiverId: e.target.value ? Number(e.target.value) : null,
+                      receiverUsername:
+                        experts.find((expert) => expert.userId === Number(e.target.value))
+                          ?.username ?? null,
+                    })
+                  }
+                >
                   <option value="">تعیین نشده</option>
-                  {experts.map((expert) => <option key={expert.userId} value={expert.userId}>{expert.username}</option>)}
+                  {experts.map((expert) => (
+                    <option key={expert.userId} value={expert.userId}>
+                      {expert.username}
+                    </option>
+                  ))}
                 </select>
               </label>
             )}
           </div>
         ) : (
-          <span className={`badge ${statusCss}`} dir="rtl">{statusLabel(status)}</span>
+          <span className={`badge ${statusCss}`} dir="rtl">
+            {statusLabel(status)}
+          </span>
         )}
       </div>
 
       {!editingContent && <p className="ticket-description">{ticket.description}</p>}
 
       <div className="ticket-meta">
-        <span><strong>اولویت:</strong> {priorityLabel(ticket.priority)}</span>
-        <span><strong>وضعیت:</strong> {statusLabel(status)}</span>
-        <span><strong>تاریخ ثبت:</strong> {formatDate(ticket.createdAt)}</span>
-        {(ticket.category || ticket.categoryId) && <span><strong>دسته‌بندی:</strong> {translateCategory(ticket.category, ticket.categoryId)}</span>}
-        {(ticket.department || ticket.departmentId) && <span><strong>دپارتمان:</strong> {translateDepartment(ticket.department, ticket.departmentId)}</span>}
-        {ticket.receiverUsername && <span><strong>کارشناس مسئول:</strong> {ticket.receiverUsername}</span>}
+        <span>
+          <strong>اولویت:</strong> {priorityLabel(ticket.priority)}
+        </span>
+        <span>
+          <strong>وضعیت:</strong> {statusLabel(status)}
+        </span>
+        <span>
+          <strong>تاریخ ثبت:</strong> {formatDate(ticket.createdAt)}
+        </span>
+        {(ticket.category || ticket.categoryId) && (
+          <span>
+            <strong>دسته‌بندی:</strong> {translateCategory(ticket.category, ticket.categoryId)}
+          </span>
+        )}
+        {(ticket.department || ticket.departmentId) && (
+          <span>
+            <strong>دپارتمان:</strong> {translateDepartment(ticket.department, ticket.departmentId)}
+          </span>
+        )}
+        {ticket.receiverUsername && (
+          <span>
+            <strong>کارشناس مسئول:</strong> {ticket.receiverUsername}
+          </span>
+        )}
       </div>
 
-      {actionError && <p className="error" role="alert">{actionError}</p>}
+      {actionError && (
+        <p className="error" role="alert">
+          {actionError}
+        </p>
+      )}
 
       <div className="card-actions">
-        <button type="button" className="secondary comments-toggle" onClick={() => setShowComments((current) => !current)}>
+        <button
+          type="button"
+          className="secondary comments-toggle"
+          onClick={() => setShowComments((current) => !current)}
+        >
           {showComments ? "بستن دیدگاه‌ها" : "دیدگاه‌ها"}
         </button>
         {canEditContent && onChange && !editingContent && (
-          <button type="button" className="secondary" onClick={() => {
-            setEditTitle(ticket.title || "");
-            setEditDescription(ticket.description || "");
-            setEditingContent(true);
-          }}>ویرایش متن تیکت</button>
+          <button
+            type="button"
+            className="secondary"
+            onClick={() => {
+              setEditTitle(ticket.title || "");
+              setEditDescription(ticket.description || "");
+              setEditingContent(true);
+            }}
+          >
+            ویرایش متن تیکت
+          </button>
         )}
       </div>
 

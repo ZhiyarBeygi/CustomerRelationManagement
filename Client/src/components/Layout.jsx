@@ -20,11 +20,16 @@ export default function Layout() {
         <span className="who" style={{ marginInlineStart: "auto" }}>
           {user?.username} · {roleLabel(user?.role)}
         </span>
-        <button className="secondary" onClick={logout}>خروج از حساب</button>
+        <button className="secondary" onClick={logout}>
+          خروج از حساب
+        </button>
       </header>
 
       <div className="app-body" dir="rtl">
-        <Sidebar collapsed={collapsed} onToggleCollapse={() => setCollapsed((current) => !current)} />
+        <Sidebar
+          collapsed={collapsed}
+          onToggleCollapse={() => setCollapsed((current) => !current)}
+        />
         <main className="page-content">
           <Outlet />
         </main>

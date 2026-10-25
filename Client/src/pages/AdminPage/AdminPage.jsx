@@ -46,26 +46,51 @@ export default function AdminPage() {
     }
   }
 
-  useEffect(() => { loadData(); }, [isAdmin, isExpert]);
+  useEffect(() => {
+    loadData();
+  }, [isAdmin, isExpert]);
 
   const roleOptions = useMemo(
-    () => roles
-      .filter((role) => role.roleId != null && role.role)
-      .map((role) => ({ id: role.roleId, role: role.role })),
+    () =>
+      roles
+        .filter((role) => role.roleId != null && role.role)
+        .map((role) => ({ id: role.roleId, role: role.role })),
     [roles]
   );
 
   const experts = useMemo(() => users.filter((user) => isExpertRole(user.role)), [users]);
 
   const visibleTickets = useMemo(() => {
-    let list = selected && isAdmin ? tickets.filter((ticket) => ticket.authorId === selected.userId) : tickets;
+    let list =
+      selected && isAdmin
+        ? tickets.filter((ticket) => ticket.authorId === selected.userId)
+        : tickets;
     const normalizedQuery = query.trim().toLowerCase();
     if (normalizedQuery) {
-      list = list.filter((ticket) => [ticket.title, ticket.description, ticket.referenceCode, ticket.authorUsername, ticket.receiverUsername, ticket.department, ticket.category]
-        .some((value) => String(value ?? "").toLowerCase().includes(normalizedQuery)));
+      list = list.filter((ticket) =>
+        [
+          ticket.title,
+          ticket.description,
+          ticket.referenceCode,
+          ticket.authorUsername,
+          ticket.receiverUsername,
+          ticket.department,
+          ticket.category,
+        ].some((value) =>
+          String(value ?? "")
+            .toLowerCase()
+            .includes(normalizedQuery)
+        )
+      );
     }
     if (statusFilter !== "all") {
-      list = list.filter((ticket) => String(ticket.status || "").trim().toLowerCase().replaceAll("-", " ") === statusFilter);
+      list = list.filter(
+        (ticket) =>
+          String(ticket.status || "")
+            .trim()
+            .toLowerCase()
+            .replaceAll("-", " ") === statusFilter
+      );
     }
     if (isExpert && expertTicketFilter === "mine") {
       list = list.filter((ticket) => Number(ticket.receiverId) === Number(currentUser?.userId));
@@ -73,13 +98,28 @@ export default function AdminPage() {
       list = list.filter((ticket) => ticket.receiverId == null);
     }
     return list;
-  }, [tickets, selected, isAdmin, query, statusFilter, isExpert, expertTicketFilter, currentUser?.userId]);
+  }, [
+    tickets,
+    selected,
+    isAdmin,
+    query,
+    statusFilter,
+    isExpert,
+    expertTicketFilter,
+    currentUser?.userId,
+  ]);
 
   function beginCreateUser() {
     setEditingUserId(null);
     setUsername("");
     setPassword("");
-    setRoleId(roleOptions.find((role) => ["user", "normal user", "standard user"].includes(String(role.role).trim().toLowerCase()))?.id?.toString() || "");
+    setRoleId(
+      roleOptions
+        .find((role) =>
+          ["user", "normal user", "standard user"].includes(String(role.role).trim().toLowerCase())
+        )
+        ?.id?.toString() || ""
+    );
     setDepartmentId("");
     setShowUserForm(true);
     setSelected(null);
@@ -108,19 +148,29 @@ export default function AdminPage() {
       if (editingUserId) {
         await api(`/api/Users/${editingUserId}`, {
           method: "PUT",
-          body: JSON.stringify({ username: username.trim(), roleId: Number(roleId), departmentId: departmentId ? Number(departmentId) : null }),
+          body: JSON.stringify({
+            username: username.trim(),
+            roleId: Number(roleId),
+            departmentId: departmentId ? Number(departmentId) : null,
+          }),
         });
       } else {
         await api("/api/Users", {
           method: "POST",
-          body: JSON.stringify({ username: username.trim(), password, roleId: Number(roleId), departmentId: departmentId ? Number(departmentId) : null }),
+          body: JSON.stringify({
+            username: username.trim(),
+            password,
+            roleId: Number(roleId),
+            departmentId: departmentId ? Number(departmentId) : null,
+          }),
         });
       }
       setShowUserForm(false);
       setPassword("");
       const refreshedUsers = await api("/api/Users");
       setUsers(Array.isArray(refreshedUsers) ? refreshedUsers : []);
-      if (editingUserId) setSelected(refreshedUsers.find((user) => user.userId === editingUserId) || null);
+      if (editingUserId)
+        setSelected(refreshedUsers.find((user) => user.userId === editingUserId) || null);
     } catch (err) {
       setError(err.message);
     } finally {
@@ -144,7 +194,9 @@ export default function AdminPage() {
           receiverId: updated.receiverId ?? null,
         }),
       });
-      setTickets((current) => current.map((item) => item.ticketId === ticket.ticketId ? updated : item));
+      setTickets((current) =>
+        current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
+      );
       return true;
     } catch (err) {
       setError(err.message);
@@ -152,30 +204,38 @@ export default function AdminPage() {
     }
   }
 
-
   return (
     <div dir="rtl">
       <div className="row page-title-row">
         <div>
           <h1>{isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف کارشناسی"}</h1>
-          <p className="muted">{isAdmin ? "حساب‌های کاربری و درخواست‌های پشتیبانی را مدیریت کنید." : "تیکت‌ها را بررسی کنید، وضعیت آن‌ها را به‌روزرسانی کنید و درخواست‌های تخصیص‌یافته را پیگیری کنید."}</p>
+          <p className="muted">
+            {isAdmin
+              ? "حساب‌های کاربری و درخواست‌های پشتیبانی را مدیریت کنید."
+              : "تیکت‌ها را بررسی کنید، وضعیت آن‌ها را به‌روزرسانی کنید و درخواست‌های تخصیص‌یافته را پیگیری کنید."}
+          </p>
         </div>
         <button onClick={() => navigate("/createTicket")}>ثبت تیکت جدید</button>
       </div>
 
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {loading && <p className="muted">در حال بارگذاری اطلاعات…</p>}
 
       <div className={`staff-dashboard${isAdmin ? " is-admin" : ""}`}>
-        {isAdmin && (
-          showUserForm ? (
+        {isAdmin &&
+          (showUserForm ? (
             <aside className="panel panel-users user-form-panel">
               <div className="row section-heading">
                 <h2>{editingUserId ? "ویرایش کاربر" : "ایجاد کاربر جدید"}</h2>
               </div>
 
               <form className="user-form" onSubmit={saveUser}>
-                <label>نام کاربری
+                <label>
+                  نام کاربری
                   <input
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
@@ -186,7 +246,8 @@ export default function AdminPage() {
                 </label>
 
                 {!editingUserId && (
-                  <label>رمز عبور اولیه
+                  <label>
+                    رمز عبور اولیه
                     <input
                       type="password"
                       value={password}
@@ -198,7 +259,8 @@ export default function AdminPage() {
                   </label>
                 )}
 
-                <label>نقش
+                <label>
+                  نقش
                   <select value={roleId} onChange={(e) => setRoleId(e.target.value)} required>
                     <option value="">انتخاب نقش</option>
                     {roleOptions.map((role) => (
@@ -209,7 +271,8 @@ export default function AdminPage() {
                   </select>
                 </label>
 
-                <label>دپارتمان
+                <label>
+                  دپارتمان
                   <select value={departmentId} onChange={(e) => setDepartmentId(e.target.value)}>
                     <option value="">بدون دپارتمان</option>
                     {DEPARTMENTS.map((department) => (
@@ -241,7 +304,9 @@ export default function AdminPage() {
             <aside className="panel panel-users">
               <div className="row section-heading">
                 <h2>کاربران</h2>
-                <button type="button" onClick={beginCreateUser}>کاربر جدید</button>
+                <button type="button" onClick={beginCreateUser}>
+                  کاربر جدید
+                </button>
               </div>
 
               <button
@@ -249,7 +314,8 @@ export default function AdminPage() {
                 className={`user ${selected === null ? "active" : ""}`}
                 onClick={() => setSelected(null)}
               >
-                <span>همه کاربران</span><small>{users.length}</small>
+                <span>همه کاربران</span>
+                <small>{users.length}</small>
               </button>
 
               {users.map((user) => (
@@ -262,10 +328,13 @@ export default function AdminPage() {
                     <span className="user-name-block">
                       {user.username}
                       <small>
-                        {roleLabel(user.role)}{user.department ? ` · ${user.department}` : ""}
+                        {roleLabel(user.role)}
+                        {user.department ? ` · ${user.department}` : ""}
                       </small>
                     </span>
-                    <small>{tickets.filter((ticket) => ticket.authorId === user.userId).length} تیکت</small>
+                    <small>
+                      {tickets.filter((ticket) => ticket.authorId === user.userId).length} تیکت
+                    </small>
                   </button>
                   <button
                     type="button"
@@ -277,11 +346,9 @@ export default function AdminPage() {
                 </div>
               ))}
 
-              {!loading && users.length === 0 && (
-                <p className="muted">کاربری پیدا نشد.</p>
-              )}
+              {!loading && users.length === 0 && <p className="muted">کاربری پیدا نشد.</p>}
 
-              {!showUserForm && selected && (
+              {selected && (
                 <button
                   type="button"
                   className="secondary full-width"
@@ -291,19 +358,26 @@ export default function AdminPage() {
                 </button>
               )}
             </aside>
-          )
-        )}
+          ))}
 
         <section className="panel panel-list staff-ticket-panel">
           <div className="row section-heading">
-            <h2>{isAdmin && selected ? `تیکت‌های ثبت‌شده توسط ${selected.username}` : "همه تیکت‌ها"}</h2>
+            <h2>
+              {isAdmin && selected ? `تیکت‌های ثبت‌شده توسط ${selected.username}` : "همه تیکت‌ها"}
+            </h2>
             <span className="count-badge">{visibleTickets.length} تیکت</span>
           </div>
           <div className="ticket-filters">
-            <label>جست‌وجو
-              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="عنوان، متن، کد یا ثبت‌کننده…" />
+            <label>
+              جست‌وجو
+              <input
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="عنوان، متن، کد یا ثبت‌کننده…"
+              />
             </label>
-            <label>وضعیت
+            <label>
+              وضعیت
               <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
                 <option value="all">همه وضعیت‌ها</option>
                 <option value="pending">در انتظار</option>
@@ -312,8 +386,12 @@ export default function AdminPage() {
               </select>
             </label>
             {isExpert && (
-              <label>نمایش تیکت‌ها
-                <select value={expertTicketFilter} onChange={(e) => setExpertTicketFilter(e.target.value)}>
+              <label>
+                نمایش تیکت‌ها
+                <select
+                  value={expertTicketFilter}
+                  onChange={(e) => setExpertTicketFilter(e.target.value)}
+                >
                   <option value="all">همه تیکت‌ها</option>
                   <option value="mine">تیکت‌های تخصیص‌یافته به من</option>
                   <option value="unassigned">تیکت‌های بدون کارشناس</option>
@@ -321,11 +399,25 @@ export default function AdminPage() {
               </label>
             )}
           </div>
-          {!loading && visibleTickets.length === 0 && <p className="muted">تیکتی مطابق فیلترهای انتخاب‌شده پیدا نشد.</p>}
+          {!loading && visibleTickets.length === 0 && (
+            <p className="muted">تیکتی مطابق فیلترهای انتخاب‌شده پیدا نشد.</p>
+          )}
           {visibleTickets.map((ticket) => (
-            <TicketCard key={ticket.ticketId} ticket={ticket} onChange={updateTicket} canEditContent canManageFields experts={experts} />
+            <TicketCard
+              key={ticket.ticketId}
+              ticket={ticket}
+              onChange={updateTicket}
+              canEditContent
+              canManageFields
+              experts={experts}
+            />
           ))}
-          {isExpert && experts.length === 0 && <p className="muted">در فهرست کاربران، حسابی با نقش «کارشناس» پیدا نشد؛ تخصیص تیکت به کارشناس تا افزودن چنین کاربری امکان‌پذیر نیست.</p>}
+          {isExpert && experts.length === 0 && (
+            <p className="muted">
+              در فهرست کاربران، حسابی با نقش «کارشناس» پیدا نشد؛ تخصیص تیکت به کارشناس تا افزودن
+              چنین کاربری امکان‌پذیر نیست.
+            </p>
+          )}
         </section>
       </div>
     </div>

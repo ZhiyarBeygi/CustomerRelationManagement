@@ -1,4 +1,3 @@
-
 import { Routes, Route, Navigate } from "react-router-dom";
 import ParticlesBackground from "./components/ParticlesBackground";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -29,10 +28,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomeRedirect />} />
 
-        <Route
-          path="/login"
-          element={<LoginWithParticles />}
-        />
+        <Route path="/login" element={<LoginWithParticles />} />
 
         <Route element={<Layout />}>
           <Route

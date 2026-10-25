@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { api } from "../api";
 import { saveAuth, homePath } from "../auth";
 
@@ -37,14 +37,35 @@ export default function LoginPage() {
   return (
     <form className="login panel panel-create" onSubmit={handleSubmit} dir="rtl">
       <h1>ورود به سامانه</h1>
-      <label>نام کاربری
-        <input value={username} onChange={(e) => setUsername(e.target.value)} autoComplete="username" autoFocus maxLength={100} required />
+      <label>
+        نام کاربری
+        <input
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+          autoComplete="username"
+          autoFocus
+          maxLength={100}
+          required
+        />
       </label>
-      <label>رمز عبور
-        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="current-password" required />
+      <label>
+        رمز عبور
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          autoComplete="current-password"
+          required
+        />
       </label>
-      {error && <p className="error" role="alert">{error}</p>}
-      <button type="submit" disabled={submitting}>{submitting ? "در حال ورود…" : "ورود"}</button>
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
+      <button type="submit" disabled={submitting}>
+        {submitting ? "در حال ورود…" : "ورود"}
+      </button>
     </form>
   );
 }

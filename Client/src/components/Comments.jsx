@@ -37,7 +37,9 @@ export default function Comments({ ticketId }) {
         if (active) setLoading(false);
       });
 
-    return () => { active = false; };
+    return () => {
+      active = false;
+    };
   }, [ticketId, staff]);
 
   async function handleAdd(e) {
@@ -72,18 +74,28 @@ export default function Comments({ ticketId }) {
   return (
     <section className="comments" aria-label="دیدگاه‌های تیکت" dir="rtl">
       <h4>گفت‌وگو درباره تیکت</h4>
-      {error && <p className="error" role="alert">{error}</p>}
+      {error && (
+        <p className="error" role="alert">
+          {error}
+        </p>
+      )}
       {loading && <p className="muted">در حال بارگذاری دیدگاه‌ها…</p>}
-      {!loading && comments.length === 0 && !error && <p className="muted">هنوز دیدگاهی ثبت نشده است.</p>}
+      {!loading && comments.length === 0 && !error && (
+        <p className="muted">هنوز دیدگاهی ثبت نشده است.</p>
+      )}
 
       {comments.map((comment) => {
         const mine = Number(comment.authorId) === Number(me?.userId);
         return (
-          <article className={`comment${mine ? " mine" : ""}${comment.isInternal ? " internal" : ""}`} key={comment.commentId}>
+          <article
+            className={`comment${mine ? " mine" : ""}${comment.isInternal ? " internal" : ""}`}
+            key={comment.commentId}
+          >
             <strong>{comment.title}</strong>
             <p>{comment.description}</p>
             <small>
-              {mine ? "شما" : comment.authorUsername || `کاربر شماره ${comment.authorId}`} · {formatDate(comment.createdAt)}
+              {mine ? "شما" : comment.authorUsername || `کاربر شماره ${comment.authorId}`} ·{" "}
+              {formatDate(comment.createdAt)}
               {comment.isInternal ? " · یادداشت داخلی" : ""}
             </small>
           </article>
@@ -92,19 +104,41 @@ export default function Comments({ ticketId }) {
 
       <form onSubmit={handleAdd}>
         <h4>ثبت دیدگاه جدید</h4>
-        <label>عنوان دیدگاه
-          <input aria-label="عنوان دیدگاه" placeholder="عنوان دیدگاه" value={title} onChange={(e) => setTitle(e.target.value)} maxLength={100} required />
+        <label>
+          عنوان دیدگاه
+          <input
+            aria-label="عنوان دیدگاه"
+            placeholder="عنوان دیدگاه"
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            maxLength={100}
+            required
+          />
         </label>
-        <label>متن دیدگاه
-          <textarea aria-label="متن دیدگاه" placeholder="پیام خود را بنویسید…" value={description} onChange={(e) => setDescription(e.target.value)} maxLength={500} required />
+        <label>
+          متن دیدگاه
+          <textarea
+            aria-label="متن دیدگاه"
+            placeholder="پیام خود را بنویسید…"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            maxLength={500}
+            required
+          />
         </label>
         {staff && (
           <label className="checkbox-label">
-            <input type="checkbox" checked={isInternal} onChange={(e) => setIsInternal(e.target.checked)} />
+            <input
+              type="checkbox"
+              checked={isInternal}
+              onChange={(e) => setIsInternal(e.target.checked)}
+            />
             یادداشت داخلی (فقط برای مدیران و کارشناسان)
           </label>
         )}
-        <button type="submit" disabled={submitting}>{submitting ? "در حال ثبت…" : "ثبت دیدگاه"}</button>
+        <button type="submit" disabled={submitting}>
+          {submitting ? "در حال ثبت…" : "ثبت دیدگاه"}
+        </button>
       </form>
     </section>
   );

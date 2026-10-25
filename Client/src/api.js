@@ -36,7 +36,9 @@ export async function api(path, options = {}) {
       headers,
     });
   } catch {
-    throw new Error(`ارتباط با سرویس برقرار نشد (${API_URL}). بررسی کنید که بک‌اند در حال اجرا باشد.`);
+    throw new Error(
+      `ارتباط با سرویس برقرار نشد (${API_URL}). بررسی کنید که بک‌اند در حال اجرا باشد.`
+    );
   }
 
   const text = await response.text();

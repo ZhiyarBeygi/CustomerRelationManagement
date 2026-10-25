@@ -13,9 +13,10 @@ function normalizeUser(user) {
     user.role_name,
     user.role_name_text
   );
-  const role = rawRole && typeof rawRole === "object"
-    ? firstDefined(rawRole.role, rawRole.name, rawRole.roleName, "")
-    : rawRole ?? "";
+  const role =
+    rawRole && typeof rawRole === "object"
+      ? firstDefined(rawRole.role, rawRole.name, rawRole.roleName, "")
+      : (rawRole ?? "");
 
   return {
     ...user,
@@ -24,7 +25,13 @@ function normalizeUser(user) {
     roleId: firstDefined(user.roleId, user.RoleId, user.role_id, null),
     role,
     departmentId: firstDefined(user.departmentId, user.DepartmentId, user.department_id, null),
-    department: firstDefined(user.department, user.Department, user.departmentName, user.DepartmentName, ""),
+    department: firstDefined(
+      user.department,
+      user.Department,
+      user.departmentName,
+      user.DepartmentName,
+      ""
+    ),
   };
 }
 
@@ -56,8 +63,14 @@ function normalizedRole(role) {
 }
 
 export function isAdminRole(role) {
-  return ["admin", "administrator", "systemadmin", "systemadministrator", "مدیر", "مدیرسیستم"]
-    .includes(normalizedRole(role));
+  return [
+    "admin",
+    "administrator",
+    "systemadmin",
+    "systemadministrator",
+    "مدیر",
+    "مدیرسیستم",
+  ].includes(normalizedRole(role));
 }
 
 export function isExpertRole(role) {
@@ -81,8 +94,8 @@ export function isSupportRole(role) {
 export function roleLabel(role) {
   if (isAdminRole(role)) return "مدیر سیستم";
   if (isExpertRole(role)) return "کارشناس";
-  if (["user", "standarduser", "normaluser", "کاربر", "کاربرعادی"]
-    .includes(normalizedRole(role))) return "کاربر";
+  if (["user", "standarduser", "normaluser", "کاربر", "کاربرعادی"].includes(normalizedRole(role)))
+    return "کاربر";
   return role || "کاربر";
 }
 
