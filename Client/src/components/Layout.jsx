@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import { getUser, clearAuth, roleLabel } from "../auth";
 import Sidebar from "./Sidebar";
+import ThemeToggle from "./ThemeToggle";
 
 export default function Layout() {
   const [collapsed, setCollapsed] = useState(false);
@@ -20,6 +21,7 @@ export default function Layout() {
         <span className="who" style={{ marginInlineStart: "auto" }}>
           {user?.username} · {roleLabel(user?.role)}
         </span>
+        <ThemeToggle />
         <button className="secondary" onClick={logout}>
           خروج از حساب
         </button>

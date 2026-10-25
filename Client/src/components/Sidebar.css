@@ -3,7 +3,7 @@
   flex: 0 0 260px;
   min-height: calc(100vh - 60px);
   padding: 14px 12px;
-  background: #fff;
+  background: var(--surface);
   border-inline-start: 1px solid var(--line);
   box-shadow: 0 4px 18px rgba(24, 34, 46, 0.04);
   transition:
@@ -31,7 +31,7 @@
   color: var(--ink);
 }
 .sidebar-toggle:hover {
-  background: rgba(24, 34, 46, 0.06);
+  background: var(--hover-overlay);
 }
 .sidebar-nav {
   display: flex;
@@ -53,8 +53,8 @@
   background: var(--bg);
 }
 .sidebar-link.active {
-  background: #d9e8ff;
-  color: #1a4a99;
+  background: var(--info-bg);
+  color: var(--info-ink);
 }
 .sidebar.is-collapsed .sidebar-link {
   text-align: center;

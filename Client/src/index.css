@@ -1,12 +1,46 @@
 :root {
   --ink: #18222e;
   --ink-2: #ff1212;
+  --ink-soft: #38465a;
   --muted: #5d6a79;
   --bg: #eef1f6;
+  --surface: #fff;
   --line: #d5dbe5;
   --accent: #0f6f78;
   --accent-dark: #0b575f;
+  --ring: rgba(15, 111, 120, 0.2);
+  --ring-strong: rgba(15, 111, 120, 0.35);
+  --hover-overlay: rgba(24, 34, 46, 0.06);
   --shadow: 0 1px 2px rgba(24, 34, 46, 0.06), 0 12px 26px -16px rgba(24, 34, 46, 0.3);
+  --shadow-sm: 0 1px 2px rgba(24, 34, 46, 0.05);
+  --glow-1: #d6edf0;
+  --glow-2: #e5dff7;
+  --topbar-from: #0d3f4d;
+  --topbar-to: #146b78;
+  --topbar-shadow: rgba(13, 63, 77, 0.7);
+  --teal-bg: #e1f4f0;
+  --teal-border: #86cdc1;
+  --teal-ink: #0b5c52;
+  --blue-bg: #e4ecfb;
+  --blue-border: #a5bdee;
+  --blue-ink: #1d4a9c;
+  --violet-bg: #ece6fa;
+  --violet-border: #bfaeec;
+  --violet-ink: #55349b;
+  --violet-line: #cdbff0;
+  --violet-hover: #f6f2ff;
+  --info-bg: #d9e8ff;
+  --info-ink: #1a4a99;
+  --pending-bg: #fdf0c9;
+  --pending-ink: #7a5a00;
+  --done-bg: #d6f0de;
+  --done-ink: #1c6b36;
+  --error-bg: #fdecea;
+  --error-ink: #b42318;
+  --comment-bg: #eef2f8;
+  --comment-line: #7b8fb5;
+  --internal-bg: #fff2d5;
+  color-scheme: light;
   font-family:
     "Calibri",
     "Segoe UI",
@@ -15,6 +49,49 @@
     sans-serif;
   color: var(--ink);
 }
+[data-theme="dark"] {
+  --ink: #e6ebf2;
+  --ink-soft: #b8c3d1;
+  --muted: #98a5b6;
+  --bg: #0f151c;
+  --surface: #18212b;
+  --line: #2c3a4a;
+  --accent: #17808b;
+  --accent-dark: #11646d;
+  --ring: rgba(60, 190, 205, 0.3);
+  --ring-strong: rgba(60, 190, 205, 0.5);
+  --hover-overlay: rgba(255, 255, 255, 0.08);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 26px -16px rgba(0, 0, 0, 0.7);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --glow-1: rgba(20, 107, 120, 0.28);
+  --glow-2: rgba(85, 52, 155, 0.24);
+  --topbar-from: #0a2830;
+  --topbar-to: #0f4a55;
+  --topbar-shadow: rgba(0, 0, 0, 0.6);
+  --teal-bg: #11302f;
+  --teal-border: #226a62;
+  --teal-ink: #6fd8c6;
+  --blue-bg: #15233c;
+  --blue-border: #2f4c82;
+  --blue-ink: #8db4ff;
+  --violet-bg: #231a3b;
+  --violet-border: #4a3a7a;
+  --violet-ink: #bfa8ff;
+  --violet-line: #4a3a7a;
+  --violet-hover: #2c2149;
+  --info-bg: #1b3157;
+  --info-ink: #9dc0ff;
+  --pending-bg: #3a2f0c;
+  --pending-ink: #f2c75c;
+  --done-bg: #14341f;
+  --done-ink: #7ad79a;
+  --error-bg: #3a1c1a;
+  --error-ink: #ff8a80;
+  --comment-bg: #1d2836;
+  --comment-line: #5c7096;
+  --internal-bg: #3a2e10;
+  color-scheme: dark;
+}
 * {
   box-sizing: border-box;
 }
@@ -22,8 +99,8 @@ body {
   margin: 0;
   min-height: 100vh;
   background:
-    radial-gradient(900px 420px at 6% -10%, #d6edf0 0%, transparent 60%),
-    radial-gradient(800px 400px at 100% 0%, #e5dff7 0%, transparent 55%), var(--bg);
+    radial-gradient(900px 420px at 6% -10%, var(--glow-1) 0%, transparent 60%),
+    radial-gradient(800px 400px at 100% 0%, var(--glow-2) 0%, transparent 55%), var(--bg);
   background-attachment: fixed;
 }
 h1 {
@@ -58,8 +135,8 @@ small,
   padding: 14px 28px;
   color: #fff;
   width: 100%;
-  background: linear-gradient(100deg, #0d3f4d, #146b78);
-  box-shadow: 0 6px 20px -10px rgba(13, 63, 77, 0.7);
+  background: linear-gradient(100deg, var(--topbar-from), var(--topbar-to));
+  box-shadow: 0 6px 20px -10px var(--topbar-shadow);
 }
 .topbar strong {
   font-size: 1.1rem;
@@ -93,37 +170,37 @@ small,
   box-shadow: var(--shadow);
 }
 .panel-create {
-  background: #e1f4f0;
-  border-color: #86cdc1;
+  background: var(--teal-bg);
+  border-color: var(--teal-border);
 } /* forms: teal */
 .panel-create h1,
 .panel-create h2 {
-  color: #0b5c52;
+  color: var(--teal-ink);
 }
 .panel-list {
-  background: #e4ecfb;
-  border-color: #a5bdee;
+  background: var(--blue-bg);
+  border-color: var(--blue-border);
 } /* ticket lists: blue */
 .panel-list h2 {
-  color: #1d4a9c;
+  color: var(--blue-ink);
   text-align: right;
 }
 .panel-users {
-  background: #ece6fa;
-  border-color: #bfaeec;
+  background: var(--violet-bg);
+  border-color: var(--violet-border);
 } /* users: violet */
 .panel-users h2 {
-  color: #55349b;
+  color: var(--violet-ink);
 }
 
 /* ---- ticket cards: white, stripe in the status color ---- */
 .card {
   padding: 14px 18px;
   margin-bottom: 12px;
-  background: #fff;
+  background: var(--surface);
   border-radius: 12px;
   overflow: hidden;
-  box-shadow: 0 1px 2px rgba(24, 34, 46, 0.05);
+  box-shadow: var(--shadow-sm);
   transition:
     transform 0.15s,
     box-shadow 0.15s;
@@ -133,7 +210,7 @@ small,
   box-shadow: var(--shadow);
 }
 .card p {
-  color: #38465a;
+  color: var(--ink-soft);
 }
 .ticket {
   border-inline-start: 7px solid;
@@ -169,7 +246,7 @@ select {
   margin-top: 5px;
   padding: 10px 12px;
   font: inherit;
-  background: #fff;
+  background: var(--surface);
   border: 1px solid var(--line);
   transition:
     border-color 0.15s,
@@ -180,7 +257,7 @@ textarea:focus,
 select:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px rgba(15, 111, 120, 0.2);
+  box-shadow: 0 0 0 3px var(--ring);
 }
 .row select {
   width: auto;
@@ -211,7 +288,7 @@ button:active {
   transform: translateY(1px);
 }
 button:focus-visible {
-  outline: 3px solid rgba(15, 111, 120, 0.35);
+  outline: 3px solid var(--ring-strong);
   outline-offset: 2px;
 }
 button.secondary {
@@ -220,7 +297,7 @@ button.secondary {
   border: 1px solid var(--line);
 }
 button.secondary:hover {
-  background: rgba(24, 34, 46, 0.06);
+  background: var(--hover-overlay);
 }
 button.cancel {
   background: var(--ink-2);
@@ -229,9 +306,9 @@ button.cancel:hover {
   background-color: rgb(203, 16, 16);
 }
 .error {
-  color: #b42318;
+  color: var(--error-ink);
   font-weight: 600;
-  background: #fdecea;
+  background: var(--error-bg);
   padding: 8px 12px;
 }
 
@@ -253,16 +330,16 @@ button.cancel:hover {
   margin-inline-end: auto;
 }
 .badge.Pending {
-  background: #fdf0c9;
-  color: #7a5a00;
+  background: var(--pending-bg);
+  color: var(--pending-ink);
 }
 .badge.In-Progress {
-  background: #d9e8ff;
-  color: #1a4a99;
+  background: var(--info-bg);
+  color: var(--info-ink);
 }
 .badge.Done {
-  background: #d6f0de;
-  color: #1c6b36;
+  background: var(--done-bg);
+  color: var(--done-ink);
 }
 
 /* ---- login ---- */
@@ -277,7 +354,7 @@ button.cancel:hover {
   margin-bottom: 8px;
   font-weight: 700;
   font-size: 1.1rem;
-  color: #0b5c52;
+  color: var(--teal-ink);
   opacity: 0.8;
   text-align: center;
 }
@@ -293,12 +370,12 @@ button.cancel:hover {
   align-items: center;
   width: 100%;
   margin-bottom: 8px;
-  background: #fff;
+  background: var(--surface);
   color: var(--ink);
-  border: 1px solid #cdbff0;
+  border: 1px solid var(--violet-line);
 }
 .user:hover {
-  background: #f6f2ff;
+  background: var(--violet-hover);
   transform: translateX(3px);
 }
 .user.active {
@@ -454,7 +531,7 @@ button {
   margin: 0 auto;
 }
 .ticket-form h1 {
-  color: #0b5c52;
+  color: var(--teal-ink);
 }
 .form-actions {
   display: flex;
@@ -549,7 +626,7 @@ button {
 .user-form {
   margin-top: 16px;
   padding-top: 14px;
-  border-top: 1px solid #cdbff0;
+  border-top: 1px solid var(--violet-line);
 }
 .user-form label {
   font-size: 0.9rem;
@@ -575,8 +652,8 @@ button {
 .count-badge {
   border-radius: 999px;
   padding: 4px 10px;
-  background: #d9e8ff;
-  color: #1a4a99;
+  background: var(--info-bg);
+  color: var(--info-ink);
   white-space: nowrap;
   font-weight: 700;
   font-size: 0.85rem;
@@ -632,6 +709,20 @@ button {
 }
 .ticket-content-editor textarea {
   min-height: 80px;
+}
+
+/* ---- light / dark toggle ---- */
+.theme-toggle {
+  padding: 7px 14px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+.theme-toggle-floating {
+  position: fixed;
+  top: 16px;
+  inset-inline-start: 16px;
+  z-index: 2;
+  background: var(--surface);
 }
 
 /* ---- animated particle background ---- */

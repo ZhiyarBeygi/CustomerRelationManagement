@@ -1,7 +1,11 @@
 import { useMemo } from "react";
 import Particles from "@tsparticles/react";
+import { useTheme } from "../theme";
+
+const PARTICLE_COLORS = { light: "#969fab", dark: "#7d8fa6" };
 
 export default function ParticlesBackground() {
+  const color = PARTICLE_COLORS[useTheme()];
   const options = useMemo(
     () => ({
       background: {
@@ -17,9 +21,9 @@ export default function ParticlesBackground() {
         },
       },
       particles: {
-        color: { value: "#969fab" },
+        color: { value: color },
         links: {
-          color: "#969fab",
+          color,
           distance: 160,
           enable: true,
           opacity: 0.5,
@@ -40,7 +44,7 @@ export default function ParticlesBackground() {
       },
       detectRetina: true,
     }),
-    []
+    [color]
   );
 
   return <Particles id="tsparticles" options={options} className="particles-bg" />;

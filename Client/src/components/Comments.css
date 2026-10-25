@@ -13,18 +13,18 @@
   font-size: 0.98rem;
 }
 .comment {
-  background: #eef2f8;
+  background: var(--comment-bg);
   border-radius: 8px;
   padding: 10px 12px;
   margin-bottom: 8px;
-  border-inline-start: 4px solid #7b8fb5;
+  border-inline-start: 4px solid var(--comment-line);
 }
 .comment.mine {
-  background: #e1f4f0;
+  background: var(--teal-bg);
   border-inline-start-color: #2a9d8f;
 }
 .comment.internal {
-  background: #fff2d5;
+  background: var(--internal-bg);
   border-inline-start-color: #d28a00;
 }
 .comment p {

@@ -8,6 +8,7 @@ import AdminPage from "./pages/AdminPage/AdminPage";
 import ExpertPage from "./pages/ExpertPage/ExpertPage";
 import { getUser, homePath } from "./auth";
 import Layout from "./components/Layout";
+import ThemeToggle from "./components/ThemeToggle";
 
 function HomeRedirect() {
   return <Navigate to={homePath(getUser())} replace />;
@@ -17,6 +18,7 @@ function LoginWithParticles() {
   return (
     <>
       <ParticlesBackground />
+      <ThemeToggle floating />
       <LoginPage />
     </>
   );

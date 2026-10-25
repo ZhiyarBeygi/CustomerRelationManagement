@@ -4,6 +4,9 @@ import { ParticlesProvider } from "@tsparticles/react";
 import { loadSlim } from "@tsparticles/slim";
 import App from "./App.jsx";
 import "./index.css";
+import { initTheme } from "./theme";
+
+initTheme();
 
 const initParticles = async (engine) => {
   await loadSlim(engine);
