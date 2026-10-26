@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "../../api";
 import { getUser } from "../../auth";
 import Comments from "../../components/Comments";
+import ConfirmDialog from "../../components/ConfirmDialog";
 import ForwardForm from "../../components/ForwardForm";
 import TransferHistory from "../../components/TransferHistory";
 import { translateDepartment } from "../../constants/ticketOptions";
@@ -68,6 +69,7 @@ export default function ExpertPage() {
   const [expandedHistory, setExpandedHistory] = useState({});
   const [requestVersion, setRequestVersion] = useState(0);
   const [statusBusyId, setStatusBusyId] = useState(null);
+  const [closeTarget, setCloseTarget] = useState(null); // ticket waiting for "close" confirmation
   const [requestedPriority, setRequestedPriority] = useState("Medium");
   const [priorityReason, setPriorityReason] = useState("");
   const [submittingRequest, setSubmittingRequest] = useState(false);
@@ -137,15 +139,6 @@ export default function ExpertPage() {
 
   // Experts move a ticket one step forward: Pending -> In Progress -> Done.
   async function changeStatus(ticket, status) {
-    if (
-      status === "Done" &&
-      !window.confirm(
-        "آیا از بستن این تیکت مطمئن هستید؟ پس از بسته شدن فقط مدیر می‌تواند آن را باز کند."
-      )
-    ) {
-      return;
-    }
-
     setError("");
     setMessage("");
     setStatusBusyId(ticket.ticketId);
@@ -163,6 +156,12 @@ export default function ExpertPage() {
     } finally {
       setStatusBusyId(null);
     }
+  }
+
+  async function confirmClose() {
+    const ticket = closeTarget;
+    await changeStatus(ticket, "Done");
+    setCloseTarget(null);
   }
 
   // The expert only sends a request; the ticket moves after the admin approves it.
@@ -333,7 +332,7 @@ export default function ExpertPage() {
                   <button
                     type="button"
                     disabled={statusBusyId === ticket.ticketId}
-                    onClick={() => changeStatus(ticket, "Done")}
+                    onClick={() => setCloseTarget(ticket)}
                   >
                     بستن تیکت
                   </button>
@@ -455,6 +454,16 @@ export default function ExpertPage() {
           ))}
         </section>
       )}
+
+      <ConfirmDialog
+        open={closeTarget !== null}
+        title="بستن تیکت"
+        message={`آیا از بستن تیکت T-${closeTarget?.ticketId} مطمئن هستید؟ پس از بسته شدن، فقط مدیر می‌تواند آن را دوباره باز کند.`}
+        confirmLabel="بستن تیکت"
+        busy={closeTarget !== null && statusBusyId === closeTarget.ticketId}
+        onConfirm={confirmClose}
+        onCancel={() => setCloseTarget(null)}
+      />
     </div>
   );
 }

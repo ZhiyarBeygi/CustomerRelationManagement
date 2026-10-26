@@ -796,6 +796,41 @@ button {
   margin-inline-start: 8px;
 }
 
+/* ---- confirm dialog (pop-up) ---- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: rgba(8, 14, 22, 0.55);
+}
+.modal {
+  width: min(440px, 100%);
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--shadow);
+}
+.modal h3 {
+  margin: 0 0 10px;
+}
+.modal p {
+  margin: 0;
+  color: var(--ink-soft);
+  line-height: 1.8;
+}
+.modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 18px;
+}
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;
