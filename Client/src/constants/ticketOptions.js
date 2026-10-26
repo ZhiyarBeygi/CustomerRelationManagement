@@ -1,6 +1,6 @@
 // Department IDs match the database.
 export const DEPARTMENTS = [
-  { id: 1, label: "فناوری اطلاعات" }, // IT
+  { id: 1, label: "IT" }, // IT
   { id: 2, label: "مالی" }, // Finance
   { id: 3, label: "منابع انسانی" }, // HR
   { id: 8, label: "اداری و مدیریت" }, // Administration
@@ -17,7 +17,7 @@ export const CATEGORIES = [
 
 const DEPARTMENT_TRANSLATIONS = new Map([
   ["finance", "مالی"],
-  ["it", "فناوری اطلاعات"],
+  ["it", "IT"],
   ["information technology", "فناوری اطلاعات"],
   ["hr", "منابع انسانی"],
   ["human resources", "منابع انسانی"],

@@ -8,7 +8,8 @@ function formatDate(value) {
 }
 
 function describe(transfer) {
-  if (String(transfer.transferType).toLowerCase() === "department") {
+  // A department change (Forward) has two different departments; a HandOff stays in one.
+  if (transfer.fromDepartmentId !== transfer.toDepartmentId) {
     const from = translateDepartment(transfer.fromDepartment, transfer.fromDepartmentId);
     const to = translateDepartment(transfer.toDepartment, transfer.toDepartmentId);
     return `ارجاع از دپارتمان ${from} به دپارتمان ${to}`;
