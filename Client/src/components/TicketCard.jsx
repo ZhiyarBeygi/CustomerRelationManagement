@@ -1,11 +1,8 @@
 import { useState } from "react";
 import Comments from "./Comments";
-import {
-  CATEGORIES,
-  DEPARTMENTS,
-  translateCategory,
-  translateDepartment,
-} from "../constants/ticketOptions";
+import ForwardForm from "./ForwardForm";
+import TransferHistory from "./TransferHistory";
+import { CATEGORIES, translateCategory, translateDepartment } from "../constants/ticketOptions";
 
 function normalizeStatus(status) {
   return String(status || "Pending")
@@ -63,9 +60,11 @@ export default function TicketCard({
   onChange,
   canEditContent = false,
   canManageFields = false,
-  experts = [],
+  onForwarded,
 }) {
   const [showComments, setShowComments] = useState(false);
+  const [showForward, setShowForward] = useState(false);
+  const [showHistory, setShowHistory] = useState(false);
   const [editingContent, setEditingContent] = useState(false);
   const [editTitle, setEditTitle] = useState(ticket.title || "");
   const [editDescription, setEditDescription] = useState(ticket.description || "");
@@ -177,27 +176,6 @@ export default function TicketCard({
               </select>
             </label>
             <label>
-              دپارتمان
-              <select
-                aria-label="دپارتمان"
-                value={ticket.departmentId ?? ""}
-                onChange={(e) =>
-                  updateField({
-                    departmentId: e.target.value ? Number(e.target.value) : null,
-                    department:
-                      DEPARTMENTS.find((d) => d.id === Number(e.target.value))?.label ?? null,
-                  })
-                }
-              >
-                <option value="">بدون دپارتمان</option>
-                {DEPARTMENTS.map((department) => (
-                  <option key={department.id} value={department.id}>
-                    {department.label}
-                  </option>
-                ))}
-              </select>
-            </label>
-            <label>
               دسته‌بندی
               <select
                 aria-label="دسته‌بندی"
@@ -218,30 +196,6 @@ export default function TicketCard({
                 ))}
               </select>
             </label>
-            {experts.length > 0 && (
-              <label>
-                کارشناس مسئول
-                <select
-                  aria-label="کارشناس مسئول"
-                  value={ticket.receiverId ?? ""}
-                  onChange={(e) =>
-                    updateField({
-                      receiverId: e.target.value ? Number(e.target.value) : null,
-                      receiverUsername:
-                        experts.find((expert) => expert.userId === Number(e.target.value))
-                          ?.username ?? null,
-                    })
-                  }
-                >
-                  <option value="">تعیین نشده</option>
-                  {experts.map((expert) => (
-                    <option key={expert.userId} value={expert.userId}>
-                      {expert.username}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
           </div>
         ) : (
           <span className={`badge ${statusCss}`} dir="rtl">
@@ -293,6 +247,18 @@ export default function TicketCard({
         >
           {showComments ? "بستن دیدگاه‌ها" : "دیدگاه‌ها"}
         </button>
+        <button
+          type="button"
+          className="secondary"
+          onClick={() => setShowHistory((current) => !current)}
+        >
+          {showHistory ? "بستن سابقه ارجاع" : "سابقه ارجاع"}
+        </button>
+        {canManageFields && onForwarded && statusCss !== "Done" && (
+          <button type="button" className="secondary" onClick={() => setShowForward(true)}>
+            ارجاع تیکت
+          </button>
+        )}
         {canEditContent && onChange && !editingContent && (
           <button
             type="button"
@@ -307,6 +273,19 @@ export default function TicketCard({
           </button>
         )}
       </div>
+
+      {showForward && (
+        <ForwardForm
+          ticket={ticket}
+          onForwarded={() => {
+            setShowForward(false);
+            onForwarded?.();
+          }}
+          onCancel={() => setShowForward(false)}
+        />
+      )}
+
+      {showHistory && <TransferHistory ticketId={ticket.ticketId} />}
 
       {showComments && <Comments ticketId={ticket.ticketId} />}
     </article>

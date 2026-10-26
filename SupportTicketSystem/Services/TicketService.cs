@@ -5,7 +5,12 @@ namespace SupportTicketSystem.Services;
 public sealed class TicketService : ITicketService
 {
     private readonly ITicketRepository _repository;
-    public TicketService(ITicketRepository repository) => _repository = repository;
+    private readonly IUsersRepository _users;
+    public TicketService(ITicketRepository repository, IUsersRepository users)
+    {
+        _repository = repository;
+        _users = users;
+    }
     public Task<IEnumerable<GetTicketDto>> GetAllAsync() => _repository.GetAllAsync();
     public Task<IEnumerable<GetTicketDto>> GetByAuthorAsync(int authorId) => _repository.GetByAuthorAsync(authorId);
     public Task<GetTicketDto?> GetByIdAsync(int id) => _repository.GetByIdAsync(id);
@@ -14,5 +19,17 @@ public sealed class TicketService : ITicketService
     {
         if (await _repository.GetByIdAsync(id) is null) return false;
         return await _repository.UpdateAsync(id, dto);
+    }
+    public Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy) =>
+        _repository.ForwardAsync(id, dto, transferredBy);
+    public Task<IEnumerable<GetTicketTransferDto>> GetTransfersAsync(int ticketId) =>
+        _repository.GetTransfersAsync(ticketId);
+
+    // Experts who belong to the given department (the people a ticket can be handed to).
+    public async Task<IEnumerable<GetUsersDto>> GetDepartmentExpertsAsync(int departmentId)
+    {
+        var users = await _users.GetAllAsync();
+        return users.Where(user => user.DepartmentId == departmentId
+            && string.Equals(user.Role?.Trim(), "Expert", StringComparison.OrdinalIgnoreCase));
     }
 }

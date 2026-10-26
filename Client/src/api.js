@@ -10,6 +10,18 @@ function translateApiMessage(message, status) {
     ["Ticket was not found.", "تیکت موردنظر پیدا نشد."],
     ["Comment was not found.", "دیدگاه موردنظر پیدا نشد."],
     ["The request is invalid.", "اطلاعات ارسال‌شده معتبر نیست."],
+    ["A closed ticket cannot be forwarded.", "تیکت بسته‌شده قابل ارجاع نیست."],
+    [
+      "Choose either a department or an expert, not both.",
+      "فقط یک مقصد (دپارتمان یا کارشناس) را انتخاب کنید.",
+    ],
+    ["The ticket is already in this department.", "تیکت هم‌اکنون در همین دپارتمان است."],
+    ["Department was not found.", "دپارتمان موردنظر پیدا نشد."],
+    ["The expert must belong to the ticket department.", "کارشناس باید عضو دپارتمان تیکت باشد."],
+    [
+      "The ticket is already assigned to this expert.",
+      "تیکت هم‌اکنون به همین کارشناس سپرده شده است.",
+    ],
   ]);
   if (known.has(text)) return known.get(text);
   if (status === 400) return "اطلاعات ارسال‌شده معتبر نیست. لطفاً ورودی‌ها را بررسی کنید.";

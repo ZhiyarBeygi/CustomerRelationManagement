@@ -9,10 +9,10 @@ export const DEPARTMENTS = [
 ];
 
 export const CATEGORIES = [
-  { id: 1, label: "مالی" },
-  { id: 2, label: "سخت‌افزار" },
-  { id: 3, label: "نرم‌افزار" },
-  { id: 4, label: "سایر" },
+  { id: 1, label: "مالی", departmentId: 2 }, // Finance -> Finance
+  { id: 2, label: "سخت‌افزار", departmentId: 1 }, // Hardware -> IT
+  { id: 3, label: "نرم‌افزار", departmentId: 1 }, // Software -> IT
+  { id: 4, label: "سایر", departmentId: null }, // Other -> no default
 ];
 
 const DEPARTMENT_TRANSLATIONS = new Map([
@@ -45,6 +45,11 @@ export function translateDepartment(value, id) {
     .toLowerCase();
   return DEPARTMENT_TRANSLATIONS.get(normalized) || value || "—";
 }
+
+export function departmentForCategory(categoryId) {
+  return CATEGORIES.find((item) => item.id === Number(categoryId))?.departmentId ?? null;
+}
+
 
 export function translateCategory(value, id) {
   const byId = CATEGORIES.find((item) => item.id === Number(id));

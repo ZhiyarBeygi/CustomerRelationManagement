@@ -46,4 +46,27 @@ public sealed class TicketRepository : ITicketRepository
             category_id = dto.CategoryId, department_id = dto.DepartmentId, receiver_id = dto.ReceiverId
         }, commandType: CommandType.StoredProcedure) > 0;
     }
+    public async Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        try
+        {
+            return await connection.ExecuteScalarAsync<int>("usp_Ticket_Forward", new
+            {
+                ticket_id = id, to_department_id = dto.ToDepartmentId, to_receiver_id = dto.ToReceiverId,
+                reason = dto.Reason.Trim(), transferred_by = transferredBy
+            }, commandType: CommandType.StoredProcedure);
+        }
+        catch (SqlException ex) when (ex.Number is >= 50001 and <= 50007)
+        {
+            // A rule inside usp_Ticket_Forward was broken; pass the message up as a normal error.
+            throw new InvalidOperationException(ex.Message);
+        }
+    }
+    public async Task<IEnumerable<GetTicketTransferDto>> GetTransfersAsync(int ticketId)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        return await connection.QueryAsync<GetTicketTransferDto>("usp_TicketTransfer_GetByTicket",
+            new { ticket_id = ticketId }, commandType: CommandType.StoredProcedure);
+    }
 }

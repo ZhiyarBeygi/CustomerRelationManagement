@@ -194,6 +194,18 @@ export default function AdminPage() {
           receiverId: updated.receiverId ?? null,
         }),
       });
+
+      // New category -> send the ticket to that category's department (recorded in the forward history).
+      const target = changes.categoryId ? departmentForCategory(changes.categoryId) : null;
+      if (target && target !== ticket.departmentId) {
+        await api(`/api/Tickets/${ticket.ticketId}/forward`, {
+          method: "POST",
+          body: JSON.stringify({ toDepartmentId: target, reason: "تغییر دسته‌بندی تیکت" }),
+        });
+        await loadData();
+        return true;
+      }
+
       setTickets((current) =>
         current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
       );
@@ -203,7 +215,6 @@ export default function AdminPage() {
       return false;
     }
   }
-
   return (
     <div dir="rtl">
       <div className="row page-title-row">
@@ -409,7 +420,7 @@ export default function AdminPage() {
               onChange={updateTicket}
               canEditContent
               canManageFields
-              experts={experts}
+              onForwarded={loadData}
             />
           ))}
           {isExpert && experts.length === 0 && (

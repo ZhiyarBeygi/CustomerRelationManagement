@@ -49,49 +49,75 @@
     sans-serif;
   color: var(--ink);
 }
+
 [data-theme="dark"] {
-  --ink: #e6ebf2;
-  --ink-soft: #b8c3d1;
-  --muted: #98a5b6;
-  --bg: #0f151c;
-  --surface: #18212b;
-  --line: #2c3a4a;
-  --accent: #17808b;
-  --accent-dark: #11646d;
-  --ring: rgba(60, 190, 205, 0.3);
-  --ring-strong: rgba(60, 190, 205, 0.5);
-  --hover-overlay: rgba(255, 255, 255, 0.08);
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 26px -16px rgba(0, 0, 0, 0.7);
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
-  --glow-1: rgba(20, 107, 120, 0.28);
-  --glow-2: rgba(85, 52, 155, 0.24);
-  --topbar-from: #0a2830;
-  --topbar-to: #0f4a55;
+  --ink: #e8eef9;
+  --ink-soft: #c0cce0;
+  --muted: #93a4bf;
+
+  /* Midnight navy surfaces */
+  --bg: #08111f;
+  --surface: #101d31;
+  --line: #293b56;
+
+  /* Blue primary actions */
+  --accent: #4f8cff;
+  --accent-dark: #3475e6;
+  --ring: rgba(79, 140, 255, 0.24);
+  --ring-strong: rgba(107, 161, 255, 0.48);
+  --hover-overlay: rgba(170, 197, 255, 0.09);
+
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.28),
+    0 12px 28px -16px rgba(0, 0, 0, 0.75);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+
+  /* Subtle blue background glows */
+  --glow-1: rgba(40, 94, 180, 0.22);
+  --glow-2: rgba(65, 83, 170, 0.16);
+
+  /* Navy gradient header */
+  --topbar-from: #071329;
+  --topbar-to: #15345e;
   --topbar-shadow: rgba(0, 0, 0, 0.6);
-  --teal-bg: #11302f;
-  --teal-border: #226a62;
-  --teal-ink: #6fd8c6;
-  --blue-bg: #15233c;
-  --blue-border: #2f4c82;
-  --blue-ink: #8db4ff;
-  --violet-bg: #231a3b;
-  --violet-border: #4a3a7a;
-  --violet-ink: #bfa8ff;
-  --violet-line: #4a3a7a;
-  --violet-hover: #2c2149;
-  --info-bg: #1b3157;
-  --info-ink: #9dc0ff;
-  --pending-bg: #3a2f0c;
-  --pending-ink: #f2c75c;
-  --done-bg: #14341f;
-  --done-ink: #7ad79a;
-  --error-bg: #3a1c1a;
-  --error-ink: #ff8a80;
-  --comment-bg: #1d2836;
-  --comment-line: #5c7096;
-  --internal-bg: #3a2e10;
+
+  /* Forms */
+  --teal-bg: #122541;
+  --teal-border: #2b4d7c;
+  --teal-ink: #a6c8ff;
+
+  /* Ticket lists */
+  --blue-bg: #10213b;
+  --blue-border: #294b7c;
+  --blue-ink: #a9caff;
+
+  /* User management */
+  --violet-bg: #15223a;
+  --violet-border: #304866;
+  --violet-ink: #c0d5f5;
+  --violet-line: #304866;
+  --violet-hover: #1d3454;
+
+  /* Status and information */
+  --info-bg: #19365f;
+  --info-ink: #b6d2ff;
+
+  --pending-bg: #3b3015;
+  --pending-ink: #f3ce73;
+
+  --done-bg: #163329;
+  --done-ink: #8bdbb5;
+
+  --error-bg: #3b2027;
+  --error-ink: #ffabb5;
+
+  /* Comments */
+  --comment-bg: #14243a;
+  --comment-line: #6687b9;
+  --internal-bg: #392e19;
+
   color-scheme: dark;
 }
+
 * {
   box-sizing: border-box;
 }
@@ -127,7 +153,6 @@ small,
   color: var(--muted);
 }
 
-/* ---- top bar ---- */
 .topbar {
   display: flex;
   align-items: center;
@@ -162,7 +187,6 @@ small,
   background: rgba(255, 255, 255, 0.14);
 }
 
-/* ---- colored sections ---- */
 .panel {
   border: 1px solid;
   padding: 22px;
@@ -172,7 +196,7 @@ small,
 .panel-create {
   background: var(--teal-bg);
   border-color: var(--teal-border);
-} /* forms: teal */
+} 
 .panel-create h1,
 .panel-create h2 {
   color: var(--teal-ink);
@@ -180,7 +204,7 @@ small,
 .panel-list {
   background: var(--blue-bg);
   border-color: var(--blue-border);
-} /* ticket lists: blue */
+} 
 .panel-list h2 {
   color: var(--blue-ink);
   text-align: right;
@@ -188,12 +212,11 @@ small,
 .panel-users {
   background: var(--violet-bg);
   border-color: var(--violet-border);
-} /* users: violet */
+} 
 .panel-users h2 {
   color: var(--violet-ink);
 }
 
-/* ---- ticket cards: white, stripe in the status color ---- */
 .card {
   padding: 14px 18px;
   margin-bottom: 12px;
@@ -231,7 +254,6 @@ small,
   gap: 12px;
 }
 
-/* ---- forms ---- */
 label {
   display: block;
   margin-bottom: 14px;
@@ -312,7 +334,6 @@ button.cancel:hover {
   padding: 8px 12px;
 }
 
-/* ---- status badges ---- */
 .badge {
   padding: 4px 12px;
   border-radius: 999px;
@@ -342,7 +363,6 @@ button.cancel:hover {
   color: var(--done-ink);
 }
 
-/* ---- login ---- */
 .login {
   max-width: 400px;
   margin: 10vh auto 0;
@@ -363,7 +383,6 @@ button.cancel:hover {
   margin-top: 4px;
 }
 
-/* ---- admin page ---- */
 .user {
   display: flex;
   justify-content: space-between;
@@ -387,7 +406,6 @@ button.cancel:hover {
   color: #e3d9ff;
 }
 
-/* ---- small entrance animation ---- */
 @keyframes rise {
   from {
     opacity: 0;
@@ -409,7 +427,6 @@ main > *,
     transition: none !important;
   }
 }
-/* ---- updated API forms and responsive ticket controls ---- */
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
@@ -485,7 +502,6 @@ button:disabled {
   }
 }
 
-/* صفحه‌بندی و فرم‌های به‌روزشده */
 html {
   direction: rtl;
 }
@@ -711,21 +727,79 @@ button {
   min-height: 80px;
 }
 
-/* ---- light / dark toggle ---- */
+.forward-form,
+.transfer-history {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--line);
+}
+.forward-form h4,
+.transfer-history h4 {
+  margin: 0 0 10px;
+  font-size: 0.98rem;
+}
+.transfer-history ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.transfer-history li {
+  margin-bottom: 8px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  border-inline-start: 4px solid var(--accent);
+  background: var(--hover-overlay);
+}
+.transfer-history li small {
+  display: block;
+  margin-top: 2px;
+}
+.transfer-history li p {
+  margin: 4px 0 0;
+}
+
 .theme-toggle {
-  padding: 7px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 8px 13px;
   font-size: 0.9rem;
   white-space: nowrap;
+  border-radius: 999px;
+  line-height: 1.2;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease;
 }
+
+.theme-toggle svg {
+  display: block;
+  flex-shrink: 0;
+}
+
 .theme-toggle-floating {
   position: fixed;
   top: 16px;
   inset-inline-start: 16px;
-  z-index: 2;
+  z-index: 10;
   background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow-sm);
 }
 
-/* ---- animated particle background ---- */
+.theme-toggle-floating:hover {
+  background: var(--hover-overlay);
+  border-color: var(--accent);
+}
+
+[data-theme="dark"] .topbar strong::before {
+  background: #8eb8ff;
+}
+
+
 .particles-bg {
   position: fixed;
   inset: 0;
@@ -742,4 +816,8 @@ button {
 .app-content {
   position: relative;
   z-index: 1;
+}
+
+.topbar button.secondary.theme-toggle {
+  border: none;
 }

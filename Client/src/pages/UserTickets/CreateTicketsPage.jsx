@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { getUser, homePath, isSupportRole } from "../../auth";
-import { CATEGORIES, DEPARTMENTS } from "../../constants/ticketOptions";
+import { CATEGORIES, DEPARTMENTS, departmentForCategory } from "../../constants/ticketOptions";
 
 export default function CreateTicketPage() {
   const navigate = useNavigate();
@@ -16,6 +16,15 @@ export default function CreateTicketPage() {
   );
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
+
+  function handleCategoryChange(e) {
+    const value = e.target.value;
+    setCategoryId(value);
+
+    // Pick the category's department automatically (the user can still change it).
+    const department = departmentForCategory(value);
+    if (department) setDepartmentId(String(department));
+  }
 
   async function handleCreate(e) {
     e.preventDefault();
@@ -72,7 +81,7 @@ export default function CreateTicketPage() {
       </label>
       <label>
         دسته‌بندی
-        <select value={categoryId} onChange={(e) => setCategoryId(e.target.value)}>
+        <select value={categoryId} onChange={handleCategoryChange}>
           <option value="">انتخاب دسته‌بندی (اختیاری)</option>
           {CATEGORIES.map((category) => (
             <option key={category.id} value={category.id}>

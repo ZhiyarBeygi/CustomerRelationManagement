@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { api } from "../../api";
 import { getUser } from "../../auth";
 import Comments from "../../components/Comments";
+import ForwardForm from "../../components/ForwardForm";
+import TransferHistory from "../../components/TransferHistory";
 import { translateDepartment } from "../../constants/ticketOptions";
 
 const normalize = (value) =>
@@ -62,6 +64,8 @@ export default function ExpertPage() {
   const [statusFilter, setStatusFilter] = useState("all");
   const [expandedComments, setExpandedComments] = useState({});
   const [requestTicketId, setRequestTicketId] = useState(null);
+  const [forwardTicketId, setForwardTicketId] = useState(null);
+  const [expandedHistory, setExpandedHistory] = useState({});
   const [requestedPriority, setRequestedPriority] = useState("Medium");
   const [priorityReason, setPriorityReason] = useState("");
   const [submittingRequest, setSubmittingRequest] = useState(false);
@@ -127,6 +131,13 @@ export default function ExpertPage() {
     setPriorityReason("");
     setMessage("");
     setError("");
+  }
+
+  function handleForwarded() {
+    setForwardTicketId(null);
+    setError("");
+    setMessage("تیکت با موفقیت ارجاع داده شد.");
+    loadTickets();
   }
 
   async function submitPriorityRequest(event, ticket) {
@@ -282,6 +293,30 @@ export default function ExpertPage() {
                 >
                   درخواست تغییر اولویت
                 </button>
+                {statusClass(ticket.status) !== "Done" && (
+                  <button
+                    type="button"
+                    className="secondary"
+                    onClick={() => {
+                      setForwardTicketId(ticket.ticketId);
+                      setMessage("");
+                    }}
+                  >
+                    ارجاع تیکت
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="secondary"
+                  onClick={() =>
+                    setExpandedHistory((current) => ({
+                      ...current,
+                      [ticket.ticketId]: !current[ticket.ticketId],
+                    }))
+                  }
+                >
+                  {expandedHistory[ticket.ticketId] ? "بستن سابقه ارجاع" : "سابقه ارجاع"}
+                </button>
                 <button
                   type="button"
                   className="secondary"
@@ -345,6 +380,16 @@ export default function ExpertPage() {
                   </div>
                 </form>
               )}
+
+              {forwardTicketId === ticket.ticketId && (
+                <ForwardForm
+                  ticket={ticket}
+                  onForwarded={handleForwarded}
+                  onCancel={() => setForwardTicketId(null)}
+                />
+              )}
+
+              {expandedHistory[ticket.ticketId] && <TransferHistory ticketId={ticket.ticketId} />}
 
               {expandedComments[ticket.ticketId] && <Comments ticketId={ticket.ticketId} />}
             </article>

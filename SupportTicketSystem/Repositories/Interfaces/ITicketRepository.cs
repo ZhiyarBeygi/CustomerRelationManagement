@@ -7,4 +7,6 @@ public interface ITicketRepository
     Task<GetTicketDto?> GetByIdAsync(int id);
     Task<int> CreateAsync(CreateTicketDto dto);
     Task<bool> UpdateAsync(int id, UpdateTicketDto dto);
+    Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy);
+    Task<IEnumerable<GetTicketTransferDto>> GetTransfersAsync(int ticketId);
 }
