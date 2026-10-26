@@ -12,8 +12,13 @@ namespace SupportTicketSystem.Controllers;
 public sealed class TicketsController : ControllerBase
 {
     private readonly ITicketService _service;
+    private readonly ITransferRequestService _requests;
 
-    public TicketsController(ITicketService service) => _service = service;
+    public TicketsController(ITicketService service, ITransferRequestService requests)
+    {
+        _service = service;
+        _requests = requests;
+    }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GetTicketDto>>> GetAll()
@@ -86,10 +91,31 @@ public sealed class TicketsController : ControllerBase
         return await _service.UpdateAsync(id, dto) ? NoContent() : NotFound();
     }
 
+    // Experts (and admins) change a ticket's status here; the workflow rules live in usp_Ticket_UpdateStatus.
+    [HttpPut("{id:int}/status")]
+    public async Task<ActionResult> ChangeStatus(int id, ChangeTicketStatusDto dto)
+    {
+        if (!IsSupport()) return Forbid();
+
+        var ticket = await _service.GetByIdAsync(id);
+        if (ticket is null || !CanAccess(ticket)) return NotFound();
+
+        try
+        {
+            await _service.ChangeStatusAsync(id, dto.Status.Trim(), User.IsInRole("Admin"));
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
     [HttpPost("{id:int}/forward")]
     public async Task<ActionResult> Forward(int id, ForwardTicketDto dto)
     {
-        if (!IsSupport()) return Forbid();
+        // Experts cannot forward directly; they send a transfer request (see below).
+        if (!User.IsInRole("Admin")) return Forbid();
 
         var ticket = await _service.GetByIdAsync(id);
         if (ticket is null || !CanAccess(ticket)) return NotFound();
@@ -137,6 +163,88 @@ public sealed class TicketsController : ControllerBase
         if (ticket.DepartmentId is null) return Ok(Array.Empty<GetUsersDto>());
 
         return Ok(await _service.GetDepartmentExpertsAsync(ticket.DepartmentId.Value));
+    }
+
+    // ----- Transfer requests: an expert asks, the admin approves or rejects -----
+
+    [HttpPost("{id:int}/transfer-requests")]
+    public async Task<ActionResult> CreateTransferRequest(int id, ForwardTicketDto dto)
+    {
+        if (!User.IsInRole("Expert")) return Forbid();
+
+        var ticket = await _service.GetByIdAsync(id);
+        if (ticket is null || !CanAccess(ticket)) return NotFound();
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            var requestId = await _requests.CreateAsync(id, dto, userId.Value);
+            return Ok(new { requestId });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{id:int}/transfer-requests")]
+    public async Task<ActionResult<IEnumerable<GetTransferRequestDto>>> GetTicketTransferRequests(int id)
+    {
+        if (!IsSupport()) return Forbid();
+
+        var ticket = await _service.GetByIdAsync(id);
+        if (ticket is null || !CanAccess(ticket)) return NotFound();
+
+        return Ok(await _requests.GetByTicketAsync(id));
+    }
+
+    [HttpGet("transfer-requests/pending")]
+    public async Task<ActionResult<IEnumerable<GetTransferRequestDto>>> GetPendingTransferRequests()
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+        return Ok(await _requests.GetPendingAsync());
+    }
+
+    [HttpPost("transfer-requests/{requestId:int}/approve")]
+    public async Task<ActionResult> ApproveTransferRequest(int requestId, ReviewTransferRequestDto dto)
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            await _requests.ApproveAsync(requestId, userId.Value, dto.Note?.Trim());
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("transfer-requests/{requestId:int}/reject")]
+    public async Task<ActionResult> RejectTransferRequest(int requestId, ReviewTransferRequestDto dto)
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+        if (string.IsNullOrWhiteSpace(dto.Note))
+            return BadRequest(new { message = "A rejection note is required." });
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            await _requests.RejectAsync(requestId, userId.Value, dto.Note.Trim());
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
     }
 
     private bool CanAccess(GetTicketDto ticket)

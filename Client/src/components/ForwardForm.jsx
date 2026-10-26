@@ -3,7 +3,8 @@ import { api } from "../api";
 import { DEPARTMENTS } from "../constants/ticketOptions";
 
 // Forward a ticket to another department, or hand it to another expert in the same department.
-export default function ForwardForm({ ticket, onForwarded, onCancel }) {
+// With asRequest the form sends a transfer request that the admin must approve.
+export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest = false }) {
   const hasDepartment = ticket.departmentId != null;
   const [mode, setMode] = useState("department"); // "department" | "expert"
   const [toDepartmentId, setToDepartmentId] = useState("");
@@ -46,7 +47,8 @@ export default function ForwardForm({ ticket, onForwarded, onCancel }) {
 
     setSubmitting(true);
     try {
-      await api(`/api/Tickets/${ticket.ticketId}/forward`, {
+      const path = asRequest ? "transfer-requests" : "forward";
+      await api(`/api/Tickets/${ticket.ticketId}/${path}`, {
         method: "POST",
         body: JSON.stringify({
           toDepartmentId: mode === "department" ? Number(toDepartmentId) : null,
@@ -63,7 +65,7 @@ export default function ForwardForm({ ticket, onForwarded, onCancel }) {
 
   return (
     <form className="forward-form" onSubmit={submit}>
-      <h4>ارجاع تیکت</h4>
+      <h4>{asRequest ? "درخواست ارجاع تیکت" : "ارجاع تیکت"}</h4>
 
       {hasDepartment && (
         <label>
@@ -92,8 +94,8 @@ export default function ForwardForm({ ticket, onForwarded, onCancel }) {
             </select>
           </label>
           <p className="muted">
-            تیکت به صف دپارتمان مقصد می‌رود، کارشناس مسئول برداشته می‌شود و وضعیت آن به «در انتظار»
-            برمی‌گردد.
+            {asRequest ? "پس از تأیید مدیر، تیکت" : "تیکت"} به صف دپارتمان مقصد می‌رود، کارشناس
+            مسئول برداشته می‌شود و وضعیت آن به «در انتظار» برمی‌گردد.
           </p>
         </>
       ) : (
@@ -110,6 +112,10 @@ export default function ForwardForm({ ticket, onForwarded, onCancel }) {
             ))}
           </select>
         </label>
+      )}
+
+      {asRequest && mode === "expert" && (
+        <p className="muted">پس از تأیید مدیر، تیکت به کارشناس انتخاب‌شده سپرده می‌شود.</p>
       )}
 
       <label>
@@ -133,7 +139,13 @@ export default function ForwardForm({ ticket, onForwarded, onCancel }) {
           انصراف
         </button>
         <button type="submit" disabled={submitting}>
-          {submitting ? "در حال ارجاع…" : "ارجاع تیکت"}
+          {submitting
+            ? asRequest
+              ? "در حال ارسال…"
+              : "در حال ارجاع…"
+            : asRequest
+              ? "ارسال درخواست"
+              : "ارجاع تیکت"}
         </button>
       </div>
     </form>

@@ -4,6 +4,7 @@ import { api } from "../../api";
 import { getUser, isAdminRole, isExpertRole, roleLabel } from "../../auth";
 import { DEPARTMENTS } from "../../constants/ticketOptions";
 import TicketCard from "../../components/TicketCard";
+import TransferRequestsPanel from "../../components/TransferRequestsPanel";
 
 export default function AdminPage() {
   const currentUser = getUser();
@@ -235,6 +236,8 @@ export default function AdminPage() {
         </p>
       )}
       {loading && <p className="muted">در حال بارگذاری اطلاعات…</p>}
+
+      {isAdmin && <TransferRequestsPanel onChanged={loadData} />}
 
       <div className={`staff-dashboard${isAdmin ? " is-admin" : ""}`}>
         {isAdmin &&

@@ -1,11 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { translateDepartment } from "../constants/ticketOptions";
-
-function formatDate(value) {
-  const date = value ? new Date(value) : null;
-  return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("fa-IR") : "نامشخص";
-}
+import { REQUEST_STATUS_LABELS, describeRequestTarget, formatDate } from "../transferText";
 
 function describe(transfer) {
   // A department change (Forward) has two different departments; a HandOff stays in one.
@@ -18,8 +14,10 @@ function describe(transfer) {
   return `واگذاری از ${from} به ${transfer.toReceiverUsername || "—"}`;
 }
 
-export default function TransferHistory({ ticketId }) {
+// showRequests (staff only) also lists the transfer requests made for this ticket.
+export default function TransferHistory({ ticketId, showRequests = false }) {
   const [transfers, setTransfers] = useState([]);
+  const [requests, setRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -27,14 +25,20 @@ export default function TransferHistory({ ticketId }) {
     let active = true;
     setLoading(true);
     setError("");
-    api(`/api/Tickets/${ticketId}/transfers`)
-      .then((list) => active && setTransfers(Array.isArray(list) ? list : []))
+    const calls = [api(`/api/Tickets/${ticketId}/transfers`)];
+    if (showRequests) calls.push(api(`/api/Tickets/${ticketId}/transfer-requests`));
+    Promise.all(calls)
+      .then(([transferList, requestList]) => {
+        if (!active) return;
+        setTransfers(Array.isArray(transferList) ? transferList : []);
+        setRequests(Array.isArray(requestList) ? requestList : []);
+      })
       .catch((err) => active && setError(err.message))
       .finally(() => active && setLoading(false));
     return () => {
       active = false;
     };
-  }, [ticketId]);
+  }, [ticketId, showRequests]);
 
   return (
     <div className="transfer-history">
@@ -60,6 +64,34 @@ export default function TransferHistory({ ticketId }) {
           </li>
         ))}
       </ul>
+
+      {showRequests && requests.length > 0 && (
+        <>
+          <h4>درخواست‌های ارجاع</h4>
+          <ul>
+            {requests.map((request) => (
+              <li key={request.requestId}>
+                <strong>
+                  {describeRequestTarget(request)}{" "}
+                  <span className={`badge ${request.status}`}>
+                    {REQUEST_STATUS_LABELS[request.status] || request.status}
+                  </span>
+                </strong>
+                <small>
+                  {formatDate(request.createdAt)} · توسط {request.requestedByUsername}
+                </small>
+                <p>دلیل: {request.reason}</p>
+                {request.status !== "Pending" && (
+                  <p>
+                    بررسی توسط {request.reviewedByUsername || "مدیر"}
+                    {request.reviewNote ? ` · ${request.reviewNote}` : ""}
+                  </p>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }

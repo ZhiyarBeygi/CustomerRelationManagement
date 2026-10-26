@@ -67,8 +67,7 @@
   --ring-strong: rgba(107, 161, 255, 0.48);
   --hover-overlay: rgba(170, 197, 255, 0.09);
 
-  --shadow: 0 2px 5px rgba(0, 0, 0, 0.28),
-    0 12px 28px -16px rgba(0, 0, 0, 0.75);
+  --shadow: 0 2px 5px rgba(0, 0, 0, 0.28), 0 12px 28px -16px rgba(0, 0, 0, 0.75);
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
 
   /* Subtle blue background glows */
@@ -196,7 +195,7 @@ small,
 .panel-create {
   background: var(--teal-bg);
   border-color: var(--teal-border);
-} 
+}
 .panel-create h1,
 .panel-create h2 {
   color: var(--teal-ink);
@@ -204,7 +203,7 @@ small,
 .panel-list {
   background: var(--blue-bg);
   border-color: var(--blue-border);
-} 
+}
 .panel-list h2 {
   color: var(--blue-ink);
   text-align: right;
@@ -212,7 +211,7 @@ small,
 .panel-users {
   background: var(--violet-bg);
   border-color: var(--violet-border);
-} 
+}
 .panel-users h2 {
   color: var(--violet-ink);
 }
@@ -361,6 +360,14 @@ button.cancel:hover {
 .badge.Done {
   background: var(--done-bg);
   color: var(--done-ink);
+}
+.badge.Approved {
+  background: var(--done-bg);
+  color: var(--done-ink);
+}
+.badge.Rejected {
+  background: var(--error-bg);
+  color: var(--error-ink);
 }
 
 .login {
@@ -758,6 +765,37 @@ button {
   margin: 4px 0 0;
 }
 
+/* ---- transfer requests ---- */
+.transfer-requests-panel {
+  margin-bottom: 18px;
+}
+.request-card {
+  margin-top: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface);
+}
+.request-card h3 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+.request-card p {
+  margin: 6px 0 0;
+}
+.request-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.request-reject {
+  margin-top: 10px;
+}
+.transfer-history li strong .badge {
+  margin-inline-start: 8px;
+}
+
 .theme-toggle {
   display: inline-flex;
   align-items: center;
@@ -798,7 +836,6 @@ button {
 [data-theme="dark"] .topbar strong::before {
   background: #8eb8ff;
 }
-
 
 .particles-bg {
   position: fixed;

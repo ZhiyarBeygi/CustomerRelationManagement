@@ -11,6 +11,22 @@ function translateApiMessage(message, status) {
     ["Comment was not found.", "دیدگاه موردنظر پیدا نشد."],
     ["The request is invalid.", "اطلاعات ارسال‌شده معتبر نیست."],
     ["A closed ticket cannot be forwarded.", "تیکت بسته‌شده قابل ارجاع نیست."],
+    ["Status is not valid.", "وضعیت انتخاب‌شده معتبر نیست."],
+    [
+      "Only an admin can reopen a closed ticket.",
+      "فقط مدیر می‌تواند تیکت بسته‌شده را دوباره باز کند.",
+    ],
+    [
+      "A ticket can only move forward: Pending, In Progress, then Done.",
+      "وضعیت تیکت فقط به‌ترتیب «در انتظار»، «در حال انجام» و «بسته‌شده» پیش می‌رود.",
+    ],
+    [
+      "This ticket already has a pending transfer request.",
+      "برای این تیکت یک درخواست ارجاع در انتظار بررسی وجود دارد.",
+    ],
+    ["Transfer request was not found.", "درخواست ارجاع پیدا نشد."],
+    ["This request has already been reviewed.", "این درخواست قبلاً بررسی شده است."],
+    ["A rejection note is required.", "نوشتن دلیل رد درخواست الزامی است."],
     [
       "Choose either a department or an expert, not both.",
       "فقط یک مقصد (دپارتمان یا کارشناس) را انتخاب کنید.",

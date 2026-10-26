@@ -20,6 +20,8 @@ public sealed class TicketService : ITicketService
         if (await _repository.GetByIdAsync(id) is null) return false;
         return await _repository.UpdateAsync(id, dto);
     }
+    public Task ChangeStatusAsync(int id, string status, bool isAdmin) =>
+        _repository.ChangeStatusAsync(id, status, isAdmin);
     public Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy) =>
         _repository.ForwardAsync(id, dto, transferredBy);
     public Task<IEnumerable<GetTicketTransferDto>> GetTransfersAsync(int ticketId) =>

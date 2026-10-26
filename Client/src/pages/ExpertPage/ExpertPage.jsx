@@ -66,6 +66,8 @@ export default function ExpertPage() {
   const [requestTicketId, setRequestTicketId] = useState(null);
   const [forwardTicketId, setForwardTicketId] = useState(null);
   const [expandedHistory, setExpandedHistory] = useState({});
+  const [requestVersion, setRequestVersion] = useState(0);
+  const [statusBusyId, setStatusBusyId] = useState(null);
   const [requestedPriority, setRequestedPriority] = useState("Medium");
   const [priorityReason, setPriorityReason] = useState("");
   const [submittingRequest, setSubmittingRequest] = useState(false);
@@ -133,11 +135,43 @@ export default function ExpertPage() {
     setError("");
   }
 
-  function handleForwarded() {
+  // Experts move a ticket one step forward: Pending -> In Progress -> Done.
+  async function changeStatus(ticket, status) {
+    if (
+      status === "Done" &&
+      !window.confirm(
+        "آیا از بستن این تیکت مطمئن هستید؟ پس از بسته شدن فقط مدیر می‌تواند آن را باز کند."
+      )
+    ) {
+      return;
+    }
+
+    setError("");
+    setMessage("");
+    setStatusBusyId(ticket.ticketId);
+    try {
+      await api(`/api/Tickets/${ticket.ticketId}/status`, {
+        method: "PUT",
+        body: JSON.stringify({ status }),
+      });
+      setTickets((current) =>
+        current.map((item) => (item.ticketId === ticket.ticketId ? { ...item, status } : item))
+      );
+      setMessage(status === "Done" ? "تیکت بسته شد." : "رسیدگی به تیکت آغاز شد.");
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setStatusBusyId(null);
+    }
+  }
+
+  // The expert only sends a request; the ticket moves after the admin approves it.
+  function handleRequested(ticketId) {
     setForwardTicketId(null);
     setError("");
-    setMessage("تیکت با موفقیت ارجاع داده شد.");
-    loadTickets();
+    setMessage("درخواست ارجاع برای بررسی مدیر ارسال شد.");
+    setExpandedHistory((current) => ({ ...current, [ticketId]: true }));
+    setRequestVersion((current) => current + 1);
   }
 
   async function submitPriorityRequest(event, ticket) {
@@ -286,6 +320,24 @@ export default function ExpertPage() {
               </div>
 
               <div className="expert-ticket-actions">
+                {statusClass(ticket.status) === "Pending" && (
+                  <button
+                    type="button"
+                    disabled={statusBusyId === ticket.ticketId}
+                    onClick={() => changeStatus(ticket, "In Progress")}
+                  >
+                    شروع رسیدگی
+                  </button>
+                )}
+                {statusClass(ticket.status) === "In-Progress" && (
+                  <button
+                    type="button"
+                    disabled={statusBusyId === ticket.ticketId}
+                    onClick={() => changeStatus(ticket, "Done")}
+                  >
+                    بستن تیکت
+                  </button>
+                )}
                 <button
                   type="button"
                   className="secondary"
@@ -302,7 +354,7 @@ export default function ExpertPage() {
                       setMessage("");
                     }}
                   >
-                    ارجاع تیکت
+                    درخواست ارجاع
                   </button>
                 )}
                 <button
@@ -383,13 +435,20 @@ export default function ExpertPage() {
 
               {forwardTicketId === ticket.ticketId && (
                 <ForwardForm
+                  asRequest
                   ticket={ticket}
-                  onForwarded={handleForwarded}
+                  onForwarded={() => handleRequested(ticket.ticketId)}
                   onCancel={() => setForwardTicketId(null)}
                 />
               )}
 
-              {expandedHistory[ticket.ticketId] && <TransferHistory ticketId={ticket.ticketId} />}
+              {expandedHistory[ticket.ticketId] && (
+                <TransferHistory
+                  key={`${ticket.ticketId}-${requestVersion}`}
+                  ticketId={ticket.ticketId}
+                  showRequests
+                />
+              )}
 
               {expandedComments[ticket.ticketId] && <Comments ticketId={ticket.ticketId} />}
             </article>

@@ -46,6 +46,20 @@ public sealed class TicketRepository : ITicketRepository
             category_id = dto.CategoryId, department_id = dto.DepartmentId, receiver_id = dto.ReceiverId
         }, commandType: CommandType.StoredProcedure) > 0;
     }
+    public async Task ChangeStatusAsync(int id, string status, bool isAdmin)
+    {
+        using var connection = new SqlConnection(_connectionString);
+        try
+        {
+            await connection.ExecuteAsync("usp_Ticket_UpdateStatus",
+                new { ticket_id = id, status, is_admin = isAdmin }, commandType: CommandType.StoredProcedure);
+        }
+        catch (SqlException ex) when (ex.Number is 50001 or (>= 50011 and <= 50013))
+        {
+            // A workflow rule inside usp_Ticket_UpdateStatus was broken.
+            throw new InvalidOperationException(ex.Message);
+        }
+    }
     public async Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy)
     {
         using var connection = new SqlConnection(_connectionString);
