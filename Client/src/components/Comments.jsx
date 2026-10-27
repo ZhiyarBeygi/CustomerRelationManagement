@@ -1,14 +1,10 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { getUser, isSupportRole } from "../auth";
+import { formatDate } from "../transferText";
 import "./Comments.css";
 
-function formatDate(value) {
-  const date = value ? new Date(value) : null;
-  return date && !Number.isNaN(date.getTime()) ? date.toLocaleString("fa-IR") : "نامشخص";
-}
-
-export default function Comments({ ticketId }) {
+export default function Comments({ ticketId, closed = false }) {
   const me = getUser();
   const staff = isSupportRole(me?.role);
   const [comments, setComments] = useState([]);
@@ -102,44 +98,48 @@ export default function Comments({ ticketId }) {
         );
       })}
 
-      <form onSubmit={handleAdd}>
-        <h4>ثبت دیدگاه جدید</h4>
-        <label>
-          عنوان دیدگاه
-          <input
-            aria-label="عنوان دیدگاه"
-            placeholder="عنوان دیدگاه"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            maxLength={100}
-            required
-          />
-        </label>
-        <label>
-          متن دیدگاه
-          <textarea
-            aria-label="متن دیدگاه"
-            placeholder="پیام خود را بنویسید…"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            maxLength={500}
-            required
-          />
-        </label>
-        {staff && (
-          <label className="checkbox-label">
+      {closed ? (
+        <p className="muted">این تیکت بسته شده است و امکان ثبت دیدگاه جدید ندارد.</p>
+      ) : (
+        <form onSubmit={handleAdd}>
+          <h4>ثبت دیدگاه جدید</h4>
+          <label>
+            عنوان دیدگاه
             <input
-              type="checkbox"
-              checked={isInternal}
-              onChange={(e) => setIsInternal(e.target.checked)}
+              aria-label="عنوان دیدگاه"
+              placeholder="عنوان دیدگاه"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              maxLength={100}
+              required
             />
-            یادداشت داخلی (فقط برای مدیران و کارشناسان)
           </label>
-        )}
-        <button type="submit" disabled={submitting}>
-          {submitting ? "در حال ثبت…" : "ثبت دیدگاه"}
-        </button>
-      </form>
+          <label>
+            متن دیدگاه
+            <textarea
+              aria-label="متن دیدگاه"
+              placeholder="پیام خود را بنویسید…"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              maxLength={500}
+              required
+            />
+          </label>
+          {staff && (
+            <label className="checkbox-label">
+              <input
+                type="checkbox"
+                checked={isInternal}
+                onChange={(e) => setIsInternal(e.target.checked)}
+              />
+              یادداشت داخلی (فقط برای مدیران و کارشناسان)
+            </label>
+          )}
+          <button type="submit" disabled={submitting}>
+            {submitting ? "در حال ثبت…" : "ثبت دیدگاه"}
+          </button>
+        </form>
+      )}
     </section>
   );
 }

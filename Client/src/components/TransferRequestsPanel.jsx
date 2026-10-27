@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../api";
 import { translateDepartment } from "../constants/ticketOptions";
 import { describeRequestTarget, formatDate } from "../transferText";
+import RequestReviewActions from "./RequestReviewActions";
 
 // Admin queue: transfer requests sent by experts, waiting for approval.
 export default function TransferRequestsPanel({ onChanged }) {
@@ -9,8 +10,6 @@ export default function TransferRequestsPanel({ onChanged }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [busyId, setBusyId] = useState(null);
-  const [rejectingId, setRejectingId] = useState(null);
-  const [note, setNote] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -35,8 +34,6 @@ export default function TransferRequestsPanel({ onChanged }) {
         method: "POST",
         body: JSON.stringify(body),
       });
-      setRejectingId(null);
-      setNote("");
       await load();
       onChanged?.();
     } catch (err) {
@@ -44,14 +41,6 @@ export default function TransferRequestsPanel({ onChanged }) {
     } finally {
       setBusyId(null);
     }
-  }
-
-  function reject(request) {
-    if (!note.trim()) {
-      setError("لطفاً دلیل رد درخواست را بنویسید.");
-      return;
-    }
-    review(request, "reject", { note: note.trim() });
   }
 
   return (
@@ -84,64 +73,12 @@ export default function TransferRequestsPanel({ onChanged }) {
             {formatDate(request.createdAt)}
           </p>
           <p>دلیل: {request.reason}</p>
-
-          {rejectingId === request.requestId ? (
-            <div className="request-reject">
-              <label>
-                دلیل رد درخواست
-                <textarea
-                  value={note}
-                  onChange={(event) => setNote(event.target.value)}
-                  maxLength={300}
-                  placeholder="دلیل رد را برای کارشناس بنویسید…"
-                />
-              </label>
-              <div className="request-actions">
-                <button
-                  type="button"
-                  className="secondary"
-                  onClick={() => {
-                    setRejectingId(null);
-                    setNote("");
-                    setError("");
-                  }}
-                  disabled={busyId === request.requestId}
-                >
-                  انصراف
-                </button>
-                <button
-                  type="button"
-                  className="cancel"
-                  onClick={() => reject(request)}
-                  disabled={busyId === request.requestId}
-                >
-                  ثبت رد درخواست
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="request-actions">
-              <button
-                type="button"
-                onClick={() => review(request, "approve", { note: null })}
-                disabled={busyId === request.requestId}
-              >
-                {busyId === request.requestId ? "در حال انجام…" : "تأیید و ارجاع"}
-              </button>
-              <button
-                type="button"
-                className="secondary"
-                onClick={() => {
-                  setRejectingId(request.requestId);
-                  setNote("");
-                  setError("");
-                }}
-                disabled={busyId === request.requestId}
-              >
-                رد درخواست
-              </button>
-            </div>
-          )}
+          <RequestReviewActions
+            busy={busyId === request.requestId}
+            approveLabel="تأیید و ارجاع"
+            onApprove={() => review(request, "approve", { note: null })}
+            onReject={(note) => review(request, "reject", { note })}
+          />
         </article>
       ))}
     </section>

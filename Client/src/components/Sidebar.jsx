@@ -43,6 +43,13 @@ export default function Sidebar({ collapsed = false, onToggleCollapse = () => {}
             className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
           >
             {collapsed ? "⚙" : "مدیریت کاربران و تیکت‌ها"}
+          </NavLink> &&
+          <NavLink
+            title={collapsed ? "مدیریت درخواست‌ها" : undefined}
+            to="/admin"
+            className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+          >
+            {collapsed ? "b" : "مدیریت درخواست‌ها"}
           </NavLink>
         )}
         {isExpert && (

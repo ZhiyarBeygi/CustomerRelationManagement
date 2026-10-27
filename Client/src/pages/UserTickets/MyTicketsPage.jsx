@@ -28,24 +28,20 @@ export default function MyTicketsPage() {
     loadTickets();
   }, [user.userId]);
 
+  // An author can only change the text of their own ticket (and only while it is pending).
   async function updateTicket(ticket, changes) {
     setError("");
-    const updated = { ...ticket, ...changes };
+    const title = changes.title ?? ticket.title;
+    const description = changes.description ?? ticket.description;
     try {
-      await api(`/api/Tickets/${ticket.ticketId}`, {
+      await api(`/api/Tickets/${ticket.ticketId}/content`, {
         method: "PUT",
-        body: JSON.stringify({
-          title: updated.title,
-          description: updated.description,
-          status: updated.status,
-          priority: updated.priority || "Medium",
-          categoryId: updated.categoryId ?? null,
-          departmentId: updated.departmentId ?? null,
-          receiverId: updated.receiverId ?? null,
-        }),
+        body: JSON.stringify({ title, description }),
       });
       setTickets((current) =>
-        current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
+        current.map((item) =>
+          item.ticketId === ticket.ticketId ? { ...item, title, description } : item
+        )
       );
       return true;
     } catch (err) {

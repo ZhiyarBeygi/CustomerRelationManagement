@@ -3,6 +3,7 @@ import Comments from "./Comments";
 import ForwardForm from "./ForwardForm";
 import TransferHistory from "./TransferHistory";
 import { CATEGORIES, translateCategory, translateDepartment } from "../constants/ticketOptions";
+import { formatDate, priorityLabel } from "../transferText";
 
 function normalizeStatus(status) {
   return String(status || "Pending")
@@ -34,25 +35,6 @@ function statusOptionValue(status) {
   if (normalized === "in progress" || normalized === "inprogress") return "In Progress";
   if (normalized === "done" || normalized === "completed") return "Done";
   return status || "Pending";
-}
-
-function priorityLabel(priority) {
-  const labels = { low: "پایین", medium: "متوسط", high: "بالا" };
-  return (
-    labels[
-      String(priority || "")
-        .trim()
-        .toLowerCase()
-    ] ||
-    priority ||
-    "—"
-  );
-}
-
-function formatDate(value) {
-  if (!value) return "نامشخص";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "نامشخص" : date.toLocaleString("fa-IR");
 }
 
 export default function TicketCard({
@@ -259,7 +241,7 @@ export default function TicketCard({
             ارجاع تیکت
           </button>
         )}
-        {canEditContent && onChange && !editingContent && (
+        {canEditContent && onChange && !editingContent && statusCss === "Pending" && (
           <button
             type="button"
             className="secondary"
@@ -287,7 +269,7 @@ export default function TicketCard({
 
       {showHistory && <TransferHistory ticketId={ticket.ticketId} />}
 
-      {showComments && <Comments ticketId={ticket.ticketId} />}
+      {showComments && <Comments ticketId={ticket.ticketId} closed={statusCss === "Done"} />}
     </article>
   );
 }

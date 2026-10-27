@@ -1,7 +1,13 @@
 import { useEffect, useState } from "react";
 import { api } from "../api";
 import { translateDepartment } from "../constants/ticketOptions";
-import { REQUEST_STATUS_LABELS, describeRequestTarget, formatDate } from "../transferText";
+import {
+  REQUEST_STATUS_LABELS,
+  describeRequestTarget,
+  describeReview,
+  formatDate,
+  priorityLabel,
+} from "../transferText";
 
 function describe(transfer) {
   // A department change (Forward) has two different departments; a HandOff stays in one.
@@ -18,6 +24,7 @@ function describe(transfer) {
 export default function TransferHistory({ ticketId, showRequests = false }) {
   const [transfers, setTransfers] = useState([]);
   const [requests, setRequests] = useState([]);
+  const [priorityRequests, setPriorityRequests] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -26,12 +33,16 @@ export default function TransferHistory({ ticketId, showRequests = false }) {
     setLoading(true);
     setError("");
     const calls = [api(`/api/Tickets/${ticketId}/transfers`)];
-    if (showRequests) calls.push(api(`/api/Tickets/${ticketId}/transfer-requests`));
+    if (showRequests) {
+      calls.push(api(`/api/Tickets/${ticketId}/transfer-requests`));
+      calls.push(api(`/api/Tickets/${ticketId}/priority-requests`));
+    }
     Promise.all(calls)
-      .then(([transferList, requestList]) => {
+      .then(([transferList, requestList, priorityList]) => {
         if (!active) return;
         setTransfers(Array.isArray(transferList) ? transferList : []);
         setRequests(Array.isArray(requestList) ? requestList : []);
+        setPriorityRequests(Array.isArray(priorityList) ? priorityList : []);
       })
       .catch((err) => active && setError(err.message))
       .finally(() => active && setLoading(false));
@@ -81,12 +92,31 @@ export default function TransferHistory({ ticketId, showRequests = false }) {
                   {formatDate(request.createdAt)} · توسط {request.requestedByUsername}
                 </small>
                 <p>دلیل: {request.reason}</p>
-                {request.status !== "Pending" && (
-                  <p>
-                    بررسی توسط {request.reviewedByUsername || "مدیر"}
-                    {request.reviewNote ? ` · ${request.reviewNote}` : ""}
-                  </p>
-                )}
+                {request.status !== "Pending" && <p>{describeReview(request)}</p>}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+
+      {showRequests && priorityRequests.length > 0 && (
+        <>
+          <h4>درخواست‌های تغییر اولویت</h4>
+          <ul>
+            {priorityRequests.map((request) => (
+              <li key={request.requestId}>
+                <strong>
+                  تغییر اولویت از «{priorityLabel(request.currentPriority)}» به «
+                  {priorityLabel(request.requestedPriority)}»{" "}
+                  <span className={`badge ${request.status}`}>
+                    {REQUEST_STATUS_LABELS[request.status] || request.status}
+                  </span>
+                </strong>
+                <small>
+                  {formatDate(request.createdAt)} · توسط {request.requestedByUsername}
+                </small>
+                <p>دلیل: {request.reason}</p>
+                {request.status !== "Pending" && <p>{describeReview(request)}</p>}
               </li>
             ))}
           </ul>

@@ -20,6 +20,18 @@ public sealed class TicketService : ITicketService
         if (await _repository.GetByIdAsync(id) is null) return false;
         return await _repository.UpdateAsync(id, dto);
     }
+    // Only the text changes; every other field keeps the value it has now.
+    public Task UpdateContentAsync(GetTicketDto ticket, UpdateTicketContentDto dto) =>
+        _repository.UpdateAsync(ticket.TicketId, new UpdateTicketDto
+        {
+            Title = dto.Title.Trim(),
+            Description = dto.Description.Trim(),
+            Status = ticket.Status,
+            Priority = ticket.Priority,
+            CategoryId = ticket.CategoryId,
+            DepartmentId = ticket.DepartmentId,
+            ReceiverId = ticket.ReceiverId
+        });
     public Task ChangeStatusAsync(int id, string status, bool isAdmin) =>
         _repository.ChangeStatusAsync(id, status, isAdmin);
     public Task<int> ForwardAsync(int id, ForwardTicketDto dto, int transferredBy) =>

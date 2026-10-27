@@ -6,6 +6,7 @@ import ConfirmDialog from "../../components/ConfirmDialog";
 import ForwardForm from "../../components/ForwardForm";
 import TransferHistory from "../../components/TransferHistory";
 import { translateDepartment } from "../../constants/ticketOptions";
+import { formatDate, priorityLabel } from "../../transferText";
 
 const normalize = (value) =>
   String(value ?? "")
@@ -34,18 +35,6 @@ function statusClass(status) {
   if (key === "in progress" || key === "inprogress") return "In-Progress";
   if (key === "done" || key === "completed") return "Done";
   return "Pending";
-}
-
-function priorityLabel(priority) {
-  return (
-    { low: "پایین", medium: "متوسط", high: "بالا" }[normalize(priority)] || priority || "نامشخص"
-  );
-}
-
-function formatDate(value) {
-  if (!value) return "نامشخص";
-  const date = new Date(value);
-  return Number.isNaN(date.getTime()) ? "نامشخص" : date.toLocaleString("fa-IR");
 }
 
 function belongsToDepartment(ticket, expert) {
@@ -189,20 +178,15 @@ export default function ExpertPage() {
 
     setSubmittingRequest(true);
     try {
-      await api("/api/Comments", {
+      await api(`/api/Tickets/${ticket.ticketId}/priority-requests`, {
         method: "POST",
-        body: JSON.stringify({
-          title: `درخواست تغییر اولویت به ${priorityLabel(requestedPriority)}`,
-          description: `اولویت فعلی: ${priorityLabel(ticket.priority)}\nاولویت پیشنهادی: ${priorityLabel(requestedPriority)}\nدلیل درخواست: ${priorityReason.trim()}`,
-          authorId: expert.userId,
-          ticketId: ticket.ticketId,
-          isInternal: true,
-        }),
+        body: JSON.stringify({ priority: requestedPriority, reason: priorityReason.trim() }),
       });
       setRequestTicketId(null);
       setPriorityReason("");
       setMessage("درخواست تغییر اولویت برای بررسی مدیر ثبت شد.");
-      setExpandedComments((current) => ({ ...current, [ticket.ticketId]: true }));
+      setExpandedHistory((current) => ({ ...current, [ticket.ticketId]: true }));
+      setRequestVersion((current) => current + 1);
     } catch (err) {
       setError(err.message || "ثبت درخواست تغییر اولویت ناموفق بود.");
     } finally {
@@ -366,7 +350,9 @@ export default function ExpertPage() {
                     }))
                   }
                 >
-                  {expandedHistory[ticket.ticketId] ? "بستن سابقه ارجاع" : "سابقه ارجاع"}
+                  {expandedHistory[ticket.ticketId]
+                    ? "بستن سابقه و درخواست‌ها"
+                    : "سابقه و درخواست‌ها"}
                 </button>
                 <button
                   type="button"
@@ -449,7 +435,12 @@ export default function ExpertPage() {
                 />
               )}
 
-              {expandedComments[ticket.ticketId] && <Comments ticketId={ticket.ticketId} />}
+              {expandedComments[ticket.ticketId] && (
+                <Comments
+                  ticketId={ticket.ticketId}
+                  closed={statusClass(ticket.status) === "Done"}
+                />
+              )}
             </article>
           ))}
         </section>

@@ -48,6 +48,9 @@ public sealed class CommentsController : ControllerBase
         var ticket = await _tickets.GetByIdAsync(dto.TicketId);
         if (ticket is null || !CanAccess(ticket)) return NotFound();
 
+        if (string.Equals(ticket.Status?.Trim(), "Done", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { message = "A closed ticket cannot receive comments." });
+
         var userId = CurrentUserId();
         if (userId is null) return Unauthorized();
         dto.AuthorId = userId.Value;

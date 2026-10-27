@@ -13,11 +13,14 @@ public sealed class TicketsController : ControllerBase
 {
     private readonly ITicketService _service;
     private readonly ITransferRequestService _requests;
+    private readonly IPriorityRequestService _priorityRequests;
 
-    public TicketsController(ITicketService service, ITransferRequestService requests)
+    public TicketsController(ITicketService service, ITransferRequestService requests,
+        IPriorityRequestService priorityRequests)
     {
         _service = service;
         _requests = requests;
+        _priorityRequests = priorityRequests;
     }
 
     [HttpGet]
@@ -73,6 +76,13 @@ public sealed class TicketsController : ControllerBase
         if (userId is null) return Unauthorized();
         dto.AuthorId = userId.Value;
 
+        // Everyone starts a ticket as Pending and unassigned; only an admin may choose otherwise.
+        if (!User.IsInRole("Admin"))
+        {
+            dto.Status = "Pending";
+            dto.ReceiverId = null;
+        }
+
         if (User.IsInRole("Expert"))
         {
             var departmentId = CurrentDepartmentId();
@@ -89,6 +99,21 @@ public sealed class TicketsController : ControllerBase
     {
         if (!User.IsInRole("Admin")) return Forbid();
         return await _service.UpdateAsync(id, dto) ? NoContent() : NotFound();
+    }
+
+    // The author may fix the text of their own ticket, but only while nobody has started on it.
+    [HttpPut("{id:int}/content")]
+    public async Task<ActionResult> UpdateContent(int id, UpdateTicketContentDto dto)
+    {
+        var ticket = await _service.GetByIdAsync(id);
+        var userId = CurrentUserId();
+        if (ticket is null || userId is null || ticket.AuthorId != userId.Value) return NotFound();
+
+        if (!string.Equals(ticket.Status?.Trim(), "Pending", StringComparison.OrdinalIgnoreCase))
+            return BadRequest(new { message = "Only a pending ticket can be edited." });
+
+        await _service.UpdateContentAsync(ticket, dto);
+        return NoContent();
     }
 
     // Experts (and admins) change a ticket's status here; the workflow rules live in usp_Ticket_UpdateStatus.
@@ -239,6 +264,88 @@ public sealed class TicketsController : ControllerBase
         try
         {
             await _requests.RejectAsync(requestId, userId.Value, dto.Note.Trim());
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    // ----- Priority requests: an expert asks, the admin approves or rejects -----
+
+    [HttpPost("{id:int}/priority-requests")]
+    public async Task<ActionResult> CreatePriorityRequest(int id, CreatePriorityRequestDto dto)
+    {
+        if (!User.IsInRole("Expert")) return Forbid();
+
+        var ticket = await _service.GetByIdAsync(id);
+        if (ticket is null || !CanAccess(ticket)) return NotFound();
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            var requestId = await _priorityRequests.CreateAsync(id, dto, userId.Value);
+            return Ok(new { requestId });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpGet("{id:int}/priority-requests")]
+    public async Task<ActionResult<IEnumerable<GetPriorityRequestDto>>> GetTicketPriorityRequests(int id)
+    {
+        if (!IsSupport()) return Forbid();
+
+        var ticket = await _service.GetByIdAsync(id);
+        if (ticket is null || !CanAccess(ticket)) return NotFound();
+
+        return Ok(await _priorityRequests.GetByTicketAsync(id));
+    }
+
+    [HttpGet("priority-requests/pending")]
+    public async Task<ActionResult<IEnumerable<GetPriorityRequestDto>>> GetPendingPriorityRequests()
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+        return Ok(await _priorityRequests.GetPendingAsync());
+    }
+
+    [HttpPost("priority-requests/{requestId:int}/approve")]
+    public async Task<ActionResult> ApprovePriorityRequest(int requestId, ReviewTransferRequestDto dto)
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            await _priorityRequests.ApproveAsync(requestId, userId.Value, dto.Note?.Trim());
+            return NoContent();
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(new { message = ex.Message });
+        }
+    }
+
+    [HttpPost("priority-requests/{requestId:int}/reject")]
+    public async Task<ActionResult> RejectPriorityRequest(int requestId, ReviewTransferRequestDto dto)
+    {
+        if (!User.IsInRole("Admin")) return Forbid();
+        if (string.IsNullOrWhiteSpace(dto.Note))
+            return BadRequest(new { message = "A rejection note is required." });
+
+        var userId = CurrentUserId();
+        if (userId is null) return Unauthorized();
+
+        try
+        {
+            await _priorityRequests.RejectAsync(requestId, userId.Value, dto.Note.Trim());
             return NoContent();
         }
         catch (InvalidOperationException ex)

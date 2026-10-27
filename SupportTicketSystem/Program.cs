@@ -18,11 +18,13 @@ builder.Services.AddScoped<ITicketRepository, TicketRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IRolesRepository, RolesRepository>();
 builder.Services.AddScoped<ITransferRequestRepository, TransferRequestRepository>();
+builder.Services.AddScoped<IPriorityRequestRepository, PriorityRequestRepository>();
 builder.Services.AddScoped<IUserService, UsersService>();
 builder.Services.AddScoped<ITicketService, TicketService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IRolesService, RolesService>();
 builder.Services.AddScoped<ITransferRequestService, TransferRequestService>();
+builder.Services.AddScoped<IPriorityRequestService, PriorityRequestService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

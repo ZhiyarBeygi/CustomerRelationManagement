@@ -9,10 +9,10 @@ public sealed class UpdateTicketDto
     [Required, StringLength(500)]
     public string Description { get; set; } = string.Empty;
 
-    [Required, StringLength(20)]
+    [Required, RegularExpression("^(Pending|In Progress|Done)$")]
     public string Status { get; set; } = string.Empty;
 
-    [Required, StringLength(10)]
+    [Required, RegularExpression("^(Low|Medium|High)$")]
     public string Priority { get; set; } = string.Empty;
     public int? CategoryId { get; set; }
     public int? DepartmentId { get; set; }

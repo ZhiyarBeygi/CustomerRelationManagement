@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { api } from "../../api";
 import { getUser, isAdminRole, isExpertRole, roleLabel } from "../../auth";
-import { DEPARTMENTS } from "../../constants/ticketOptions";
+import { DEPARTMENTS, departmentForCategory } from "../../constants/ticketOptions";
 import TicketCard from "../../components/TicketCard";
+import PriorityRequestsPanel from "../../components/PriorityRequestsPanel";
 import TransferRequestsPanel from "../../components/TransferRequestsPanel";
 
 export default function AdminPage() {
@@ -15,6 +16,7 @@ export default function AdminPage() {
   const [roles, setRoles] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [selected, setSelected] = useState(null);
+  const [panelsVersion, setPanelsVersion] = useState(0); // bump to reload the request panels
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -183,6 +185,20 @@ export default function AdminPage() {
     setError("");
     const updated = { ...ticket, ...changes };
     try {
+      // A status change goes through the status endpoint, so its rules apply
+      // (for example, closing a ticket also closes its waiting requests).
+      if (changes.status && Object.keys(changes).length === 1) {
+        await api(`/api/Tickets/${ticket.ticketId}/status`, {
+          method: "PUT",
+          body: JSON.stringify({ status: changes.status }),
+        });
+        setTickets((current) =>
+          current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
+        );
+        setPanelsVersion((current) => current + 1);
+        return true;
+      }
+
       await api(`/api/Tickets/${ticket.ticketId}`, {
         method: "PUT",
         body: JSON.stringify({
@@ -203,6 +219,7 @@ export default function AdminPage() {
           method: "POST",
           body: JSON.stringify({ toDepartmentId: target, reason: "تغییر دسته‌بندی تیکت" }),
         });
+        setPanelsVersion((current) => current + 1);
         await loadData();
         return true;
       }
@@ -237,7 +254,8 @@ export default function AdminPage() {
       )}
       {loading && <p className="muted">در حال بارگذاری اطلاعات…</p>}
 
-      {isAdmin && <TransferRequestsPanel onChanged={loadData} />}
+      {isAdmin && <TransferRequestsPanel key={`t${panelsVersion}`} onChanged={loadData} />}
+      {isAdmin && <PriorityRequestsPanel key={`p${panelsVersion}`} onChanged={loadData} />}
 
       <div className={`staff-dashboard${isAdmin ? " is-admin" : ""}`}>
         {isAdmin &&
@@ -433,6 +451,10 @@ export default function AdminPage() {
             </p>
           )}
         </section>
+      </div>
+
+      <div>
+        
       </div>
     </div>
   );

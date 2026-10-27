@@ -13,6 +13,16 @@ function translateApiMessage(message, status) {
     ["A closed ticket cannot be forwarded.", "تیکت بسته‌شده قابل ارجاع نیست."],
     ["Status is not valid.", "وضعیت انتخاب‌شده معتبر نیست."],
     [
+      "This ticket already has a pending priority request.",
+      "برای این تیکت یک درخواست تغییر اولویت در انتظار بررسی وجود دارد.",
+    ],
+    ["Priority request was not found.", "درخواست تغییر اولویت پیدا نشد."],
+    ["The ticket already has this priority.", "تیکت هم‌اکنون همین اولویت را دارد."],
+    ["Priority is not valid.", "اولویت انتخاب‌شده معتبر نیست."],
+    ["A closed ticket cannot change priority.", "اولویت تیکت بسته‌شده قابل تغییر نیست."],
+    ["A closed ticket cannot receive comments.", "برای تیکت بسته‌شده نمی‌توان دیدگاه ثبت کرد."],
+    ["Only a pending ticket can be edited.", "فقط تیکت در وضعیت «در انتظار» قابل ویرایش است."],
+    [
       "Only an admin can reopen a closed ticket.",
       "فقط مدیر می‌تواند تیکت بسته‌شده را دوباره باز کند.",
     ],
