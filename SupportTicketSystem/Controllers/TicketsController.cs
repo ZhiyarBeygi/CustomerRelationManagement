@@ -148,6 +148,17 @@ public sealed class TicketsController : ControllerBase
         var userId = CurrentUserId();
         if (userId is null) return Unauthorized();
 
+        if (dto.ToReceiverId is null)
+            return BadRequest(new { message = "Choose an expert for the forwarding destination." });
+
+        var targetDepartmentId = dto.ToDepartmentId ?? ticket.DepartmentId;
+        if (targetDepartmentId is null)
+            return BadRequest(new { message = "Assign a department to this ticket before forwarding it." });
+
+        var destinationExperts = await _service.GetDepartmentExpertsAsync(targetDepartmentId.Value);
+        if (!destinationExperts.Any(expert => expert.UserId == dto.ToReceiverId.Value))
+            return BadRequest(new { message = "The selected expert must belong to the destination department." });
+
         try
         {
             var transferId = await _service.ForwardAsync(id, dto, userId.Value);
@@ -179,15 +190,21 @@ public sealed class TicketsController : ControllerBase
     }
 
     [HttpGet("{id:int}/experts")]
-    public async Task<ActionResult<IEnumerable<GetUsersDto>>> GetExperts(int id)
+    public async Task<ActionResult<IEnumerable<GetUsersDto>>> GetExperts(
+        int id,
+        [FromQuery] int? departmentId)
     {
         if (!IsSupport()) return Forbid();
 
         var ticket = await _service.GetByIdAsync(id);
         if (ticket is null || !CanAccess(ticket)) return NotFound();
-        if (ticket.DepartmentId is null) return Ok(Array.Empty<GetUsersDto>());
 
-        return Ok(await _service.GetDepartmentExpertsAsync(ticket.DepartmentId.Value));
+        var targetDepartmentId = departmentId ?? ticket.DepartmentId;
+        if (targetDepartmentId is null) return Ok(Array.Empty<GetUsersDto>());
+        if (targetDepartmentId <= 0)
+            return BadRequest(new { message = "Department was not found." });
+
+        return Ok(await _service.GetDepartmentExpertsAsync(targetDepartmentId.Value));
     }
 
     // ----- Transfer requests: an expert asks, the admin approves or rejects -----
