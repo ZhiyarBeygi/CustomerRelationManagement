@@ -21,6 +21,7 @@ export default function Sidebar({ collapsed = false, onToggleCollapse = () => {}
           {collapsed ? "«" : "»"}
         </button>
       </div>
+
       <nav className="sidebar-nav" aria-label="ناوبری اصلی">
         <NavLink
           title={collapsed ? "تیکت‌های من" : undefined}
@@ -36,22 +37,32 @@ export default function Sidebar({ collapsed = false, onToggleCollapse = () => {}
         >
           {collapsed ? "＋" : "ثبت تیکت جدید"}
         </NavLink>
+
         {isAdmin && (
-          <NavLink
-            title={collapsed ? "مدیریت کاربران و تیکت‌ها" : undefined}
-            to="/admin"
-            className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
-          >
-            {collapsed ? "⚙" : "مدیریت کاربران و تیکت‌ها"}
-          </NavLink> &&
-          <NavLink
-            title={collapsed ? "مدیریت درخواست‌ها" : undefined}
-            to="/admin"
-            className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
-          >
-            {collapsed ? "b" : "مدیریت درخواست‌ها"}
-          </NavLink>
+          <>
+            <div className="sidebar-section">
+              {!collapsed && <div className="sidebar-section-title">مدیریت</div>}
+              <NavLink
+                title={collapsed ? "مدیریت کاربران و تیکت‌ها" : undefined}
+                to="/admin"
+                className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+              >
+                {collapsed ? "⚙" : "مدیریت کاربران و تیکت‌ها"}
+              </NavLink>
+            </div>
+            <div className="sidebar-section sidebar-requests-section">
+              {!collapsed && <div className="sidebar-section-title">درخواست‌ها</div>}
+              <NavLink
+                title={collapsed ? "مدیریت درخواست‌ها" : undefined}
+                to="/requests"
+                className={({ isActive }) => `sidebar-link${isActive ? " active" : ""}`}
+              >
+                {collapsed ? "📨" : "مدیریت درخواست‌ها"}
+              </NavLink>
+            </div>
+          </>
         )}
+
         {isExpert && (
           <NavLink
             title={collapsed ? "صف کارشناسی" : undefined}
