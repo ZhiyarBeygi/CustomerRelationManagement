@@ -5,6 +5,7 @@ import LoginPage from "./pages/LoginPage";
 import MyTicketsPage from "./pages/UserTickets/MyTicketsPage";
 import CreateTicketPage from "./pages/UserTickets/CreateTicketsPage";
 import AdminPage from "./pages/AdminPage/AdminPage";
+import RequestsPage from "./pages/RequestsPage/RequestsPage";
 import ExpertPage from "./pages/ExpertPage/ExpertPage";
 import { getUser, homePath } from "./auth";
 import Layout from "./components/Layout";
@@ -56,6 +57,14 @@ export default function App() {
             element={
               <ProtectedRoute adminOnly>
                 <AdminPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/requests"
+            element={
+              <ProtectedRoute adminOnly>
+                <RequestsPage />
               </ProtectedRoute>
             }
           />
