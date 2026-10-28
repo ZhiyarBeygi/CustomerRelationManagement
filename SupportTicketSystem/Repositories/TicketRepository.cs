@@ -68,10 +68,10 @@ public sealed class TicketRepository : ITicketRepository
             return await connection.ExecuteScalarAsync<int>("usp_Ticket_Forward", new
             {
                 ticket_id = id, to_department_id = dto.ToDepartmentId, to_receiver_id = dto.ToReceiverId,
-                reason = dto.Reason.Trim(), transferred_by = transferredBy
+                reason = dto.Reason.Trim(), transferred_by = transferredBy, require_expert = true
             }, commandType: CommandType.StoredProcedure);
         }
-        catch (SqlException ex) when (ex.Number is >= 50001 and <= 50007)
+        catch (SqlException ex) when (ex.Number is >= 50001 and <= 50009)
         {
             // A rule inside usp_Ticket_Forward was broken; pass the message up as a normal error.
             throw new InvalidOperationException(ex.Message);
