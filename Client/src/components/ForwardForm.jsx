@@ -11,22 +11,57 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
   const [toReceiverId, setToReceiverId] = useState("");
   const [reason, setReason] = useState("");
   const [experts, setExperts] = useState([]);
+  const [loadingExperts, setLoadingExperts] = useState(false);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
   const departments = DEPARTMENTS.filter((item) => item.id !== Number(ticket.departmentId));
-  const otherExperts = experts.filter((expert) => expert.userId !== ticket.receiverId);
+  const expertsDepartmentId =
+    mode === "expert"
+      ? ticket.departmentId == null
+        ? ""
+        : String(ticket.departmentId)
+      : !asRequest && toDepartmentId
+        ? toDepartmentId
+        : "";
+  const expertOptions =
+    mode === "expert"
+      ? experts.filter((expert) => Number(expert.userId) !== Number(ticket.receiverId))
+      : experts;
 
   useEffect(() => {
-    if (!hasDepartment) return undefined;
     let active = true;
-    api(`/api/Tickets/${ticket.ticketId}/experts`)
-      .then((list) => active && setExperts(Array.isArray(list) ? list : []))
-      .catch(() => active && setExperts([]));
+    setExperts([]);
+    setToReceiverId("");
+
+    if (!expertsDepartmentId) {
+      setLoadingExperts(false);
+      return () => {
+        active = false;
+      };
+    }
+
+    setLoadingExperts(true);
+    api(
+      `/api/Tickets/${ticket.ticketId}/experts?departmentId=${encodeURIComponent(expertsDepartmentId)}`
+    )
+      .then((list) => {
+        if (active) setExperts(Array.isArray(list) ? list : []);
+      })
+      .catch((err) => {
+        if (active) {
+          setExperts([]);
+          setError(err.message || "دریافت فهرست کارشناسان ناموفق بود.");
+        }
+      })
+      .finally(() => {
+        if (active) setLoadingExperts(false);
+      });
+
     return () => {
       active = false;
     };
-  }, [ticket.ticketId, hasDepartment]);
+  }, [ticket.ticketId, expertsDepartmentId]);
 
   async function submit(event) {
     event.preventDefault();
@@ -34,6 +69,10 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
 
     if (mode === "department" && !toDepartmentId) {
       setError("لطفاً دپارتمان مقصد را انتخاب کنید.");
+      return;
+    }
+    if (mode === "department" && !asRequest && !toReceiverId) {
+      setError("لطفاً کارشناس دپارتمان مقصد را انتخاب کنید.");
       return;
     }
     if (mode === "expert" && !toReceiverId) {
@@ -52,7 +91,10 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
         method: "POST",
         body: JSON.stringify({
           toDepartmentId: mode === "department" ? Number(toDepartmentId) : null,
-          toReceiverId: mode === "expert" ? Number(toReceiverId) : null,
+          toReceiverId:
+            mode === "expert" || (mode === "department" && !asRequest)
+              ? Number(toReceiverId)
+              : null,
           reason: reason.trim(),
         }),
       });
@@ -70,20 +112,35 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
       {hasDepartment && (
         <label>
           نوع ارجاع
-          <select value={mode} onChange={(event) => setMode(event.target.value)}>
+          <select
+            value={mode}
+            onChange={(event) => {
+              setMode(event.target.value);
+              setToDepartmentId("");
+              setToReceiverId("");
+              setExperts([]);
+              setError("");
+            }}
+          >
             <option value="department">ارجاع به دپارتمان دیگر</option>
             <option value="expert">واگذاری به کارشناس دیگر همین دپارتمان</option>
           </select>
         </label>
       )}
 
-      {mode === "department" ? (
+      {mode === "department" && (
         <>
           <label>
             دپارتمان مقصد
             <select
               value={toDepartmentId}
-              onChange={(event) => setToDepartmentId(event.target.value)}
+              onChange={(event) => {
+                setToDepartmentId(event.target.value);
+                setToReceiverId("");
+                setExperts([]);
+                setError("");
+              }}
+              required
             >
               <option value="">انتخاب کنید…</option>
               {departments.map((item) => (
@@ -94,18 +151,32 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
             </select>
           </label>
           <p className="muted">
-            {asRequest ? "پس از تأیید مدیر، تیکت" : "تیکت"} به صف دپارتمان مقصد می‌رود، کارشناس
-            مسئول برداشته می‌شود و وضعیت آن به «در انتظار» برمی‌گردد.
+            {asRequest
+              ? "پس از تأیید مدیر، تیکت به صف دپارتمان مقصد منتقل می‌شود."
+              : "پس از انتخاب دپارتمان، انتخاب یک کارشناس از همان دپارتمان الزامی است. تیکت مستقیماً به او واگذار می‌شود."}
           </p>
         </>
-      ) : (
+      )}
+
+      {(mode === "expert" || (mode === "department" && !asRequest && Boolean(toDepartmentId))) && (
         <label>
           کارشناس مقصد
-          <select value={toReceiverId} onChange={(event) => setToReceiverId(event.target.value)}>
+          <select
+            value={toReceiverId}
+            onChange={(event) => setToReceiverId(event.target.value)}
+            required
+            disabled={loadingExperts || !expertsDepartmentId}
+          >
             <option value="">
-              {otherExperts.length === 0 ? "کارشناس دیگری در این دپارتمان نیست" : "انتخاب کنید…"}
+              {loadingExperts
+                ? "در حال دریافت فهرست کارشناسان…"
+                : !expertsDepartmentId
+                  ? "ابتدا دپارتمان را انتخاب کنید"
+                  : expertOptions.length === 0
+                    ? "کارشناس واجد شرایطی در این دپارتمان نیست"
+                    : "انتخاب کنید…"}
             </option>
-            {otherExperts.map((expert) => (
+            {expertOptions.map((expert) => (
               <option key={expert.userId} value={expert.userId}>
                 {expert.username}
               </option>
@@ -118,27 +189,28 @@ export default function ForwardForm({ ticket, onForwarded, onCancel, asRequest =
         <p className="muted">پس از تأیید مدیر، تیکت به کارشناس انتخاب‌شده سپرده می‌شود.</p>
       )}
 
-      <label>
-        دلیل ارجاع
-        <textarea
-          value={reason}
-          onChange={(event) => setReason(event.target.value)}
-          maxLength={300}
-          placeholder="دلیل ارجاع را بنویسید…"
-        />
-      </label>
-
       {error && (
         <p className="error" role="alert">
           {error}
         </p>
       )}
 
+      <label>
+        دلیل ارجاع
+        <textarea
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          maxLength={300}
+          required
+          placeholder="دلیل ارجاع را بنویسید…"
+        />
+      </label>
+
       <div className="form-actions">
         <button type="button" className="secondary" onClick={onCancel} disabled={submitting}>
           انصراف
         </button>
-        <button type="submit" disabled={submitting}>
+        <button type="submit" disabled={submitting || loadingExperts}>
           {submitting
             ? asRequest
               ? "در حال ارسال…"
