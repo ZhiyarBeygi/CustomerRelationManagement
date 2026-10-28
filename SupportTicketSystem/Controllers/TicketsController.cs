@@ -204,6 +204,11 @@ public sealed class TicketsController : ControllerBase
         if (targetDepartmentId <= 0)
             return BadRequest(new { message = "Department was not found." });
 
+        // Experts may only inspect experts from their own ticket department.
+        // Admins can select a destination department when forwarding.
+        if (!User.IsInRole("Admin") && targetDepartmentId != ticket.DepartmentId)
+            return Forbid();
+
         return Ok(await _service.GetDepartmentExpertsAsync(targetDepartmentId.Value));
     }
 
