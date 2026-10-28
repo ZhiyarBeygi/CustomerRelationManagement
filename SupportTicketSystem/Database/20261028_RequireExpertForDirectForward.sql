@@ -6,6 +6,9 @@ must include an expert from that department. Existing transfer-request approval
 calls omit the parameter and retain the ability to send a ticket to a department
 queue when the expert submitted a department-only request.
 */
+USE [CustomerRelationManagement];
+GO
+
 ALTER PROCEDURE dbo.usp_Ticket_Forward
     @ticket_id INT,
     @to_department_id INT = NULL,
