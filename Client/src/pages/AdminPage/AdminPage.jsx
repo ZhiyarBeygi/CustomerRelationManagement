@@ -4,8 +4,6 @@ import { api } from "../../api";
 import { getUser, isAdminRole, isExpertRole, roleLabel } from "../../auth";
 import { DEPARTMENTS, departmentForCategory } from "../../constants/ticketOptions";
 import TicketCard from "../../components/TicketCard";
-import PriorityRequestsPanel from "../../components/PriorityRequestsPanel";
-import TransferRequestsPanel from "../../components/TransferRequestsPanel";
 
 export default function AdminPage() {
   const currentUser = getUser();
@@ -16,7 +14,6 @@ export default function AdminPage() {
   const [roles, setRoles] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [selected, setSelected] = useState(null);
-  const [panelsVersion, setPanelsVersion] = useState(0); // bump to reload the request panels
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -183,10 +180,24 @@ export default function AdminPage() {
 
   async function updateTicket(ticket, changes) {
     setError("");
+
+    // A category mapped to a different department needs an explicit forward operation
+    // so the admin can choose the destination expert.
+    if (Object.prototype.hasOwnProperty.call(changes, "categoryId")) {
+      const targetDepartmentId = changes.categoryId
+        ? departmentForCategory(changes.categoryId)
+        : null;
+      if (targetDepartmentId != null && Number(targetDepartmentId) !== Number(ticket.departmentId)) {
+        setError(
+          "برای انتقال تیکت به دپارتمان دیگر، ابتدا از گزینه «ارجاع تیکت» استفاده کنید و کارشناس مقصد را انتخاب کنید؛ سپس دسته‌بندی را تغییر دهید."
+        );
+        return false;
+      }
+    }
+
     const updated = { ...ticket, ...changes };
     try {
-      // A status change goes through the status endpoint, so its rules apply
-      // (for example, closing a ticket also closes its waiting requests).
+      // A status change goes through the status endpoint so its workflow rules apply.
       if (changes.status && Object.keys(changes).length === 1) {
         await api(`/api/Tickets/${ticket.ticketId}/status`, {
           method: "PUT",
@@ -195,7 +206,6 @@ export default function AdminPage() {
         setTickets((current) =>
           current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
         );
-        setPanelsVersion((current) => current + 1);
         return true;
       }
 
@@ -211,18 +221,6 @@ export default function AdminPage() {
           receiverId: updated.receiverId ?? null,
         }),
       });
-
-      // New category -> send the ticket to that category's department (recorded in the forward history).
-      const target = changes.categoryId ? departmentForCategory(changes.categoryId) : null;
-      if (target && target !== ticket.departmentId) {
-        await api(`/api/Tickets/${ticket.ticketId}/forward`, {
-          method: "POST",
-          body: JSON.stringify({ toDepartmentId: target, reason: "تغییر دسته‌بندی تیکت" }),
-        });
-        setPanelsVersion((current) => current + 1);
-        await loadData();
-        return true;
-      }
 
       setTickets((current) =>
         current.map((item) => (item.ticketId === ticket.ticketId ? updated : item))
@@ -240,7 +238,7 @@ export default function AdminPage() {
           <h1>{isAdmin ? "مدیریت کاربران و تیکت‌ها" : "صف کارشناسی"}</h1>
           <p className="muted">
             {isAdmin
-              ? "حساب‌های کاربری و درخواست‌های پشتیبانی را مدیریت کنید."
+              ? "حساب‌های کاربری و تیکت‌های پشتیبانی را مدیریت کنید."
               : "تیکت‌ها را بررسی کنید، وضعیت آن‌ها را به‌روزرسانی کنید و درخواست‌های تخصیص‌یافته را پیگیری کنید."}
           </p>
         </div>
@@ -253,9 +251,6 @@ export default function AdminPage() {
         </p>
       )}
       {loading && <p className="muted">در حال بارگذاری اطلاعات…</p>}
-
-      {isAdmin && <TransferRequestsPanel key={`t${panelsVersion}`} onChanged={loadData} />}
-      {isAdmin && <PriorityRequestsPanel key={`p${panelsVersion}`} onChanged={loadData} />}
 
       <div className={`staff-dashboard${isAdmin ? " is-admin" : ""}`}>
         {isAdmin &&

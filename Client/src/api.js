@@ -44,6 +44,10 @@ function translateApiMessage(message, status) {
     ["The ticket is already in this department.", "تیکت هم‌اکنون در همین دپارتمان است."],
     ["Department was not found.", "دپارتمان موردنظر پیدا نشد."],
     ["The expert must belong to the ticket department.", "کارشناس باید عضو دپارتمان تیکت باشد."],
+    ["The expert must belong to the destination department.", "کارشناس باید عضو دپارتمان مقصد باشد."],
+    ["An expert must be selected for the forwarding destination.", "انتخاب کارشناس برای مقصد ارجاع الزامی است."],
+    ["The ticket must have a department before it can be forwarded.", "پیش از ارجاع، باید دپارتمان تیکت مشخص شود."],
+    ["Choose a destination department or expert.", "دپارتمان یا کارشناس مقصد را انتخاب کنید."],
     [
       "The ticket is already assigned to this expert.",
       "تیکت هم‌اکنون به همین کارشناس سپرده شده است.",
